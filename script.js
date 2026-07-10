@@ -1,132 +1,72 @@
-// Public instance router mapping metadata queries
-const ANIME_API_URL = 'https://api.jikan.moe/v4';
+// Public Streaming API and Streaming Embed sources
+const ANIME_API = "https://api.consumet.org/anime/gogoanime";
+const PLAYER_EMBED = "https://anitaku.to/embedchat?id=";
 
-let currentAnimeData = null;
-let activeLanguage = 'sub'; // Tracks user language choice ('sub' vs 'dub')
-
-// UI elements
-const loadingScreen = document.getElementById('loading-screen');
-const trendingGrid = document.getElementById('trending-grid');
-const popularGrid = document.getElementById('popular-grid');
-const homeView = document.getElementById('home-view');
-const playerView = document.getElementById('player-view');
-const videoPlayer = document.getElementById('main-video');
-const episodeContainer = document.getElementById('episode-list-container');
-
-const btnSub = document.getElementById('btn-sub');
-const btnDub = document.getElementById('btn-dub');
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadCatalogPage('/top/anime?filter=airing&limit=10', trendingGrid);
-    loadCatalogPage('/top/anime?filter=bypopular&limit=10', popularGrid);
-    setupLanguageControls();
-    
-    document.getElementById('back-to-home-btn').addEventListener('click', () => {
-        playerView.classList.add('hidden');
-        homeView.classList.remove('hidden');
-        videoPlayer.pause();
-        videoPlayer.src = "";
-    });
-    
-    // Hide loading screen safely
-    setTimeout(() => {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => loadingScreen.style.display = 'none', 300);
-    }, 600);
+// Automatically load popular anime list on page startup
+document.addEventListener("DOMContentLoaded", () => {
+    getPopularAnime();
 });
 
-// Fetches media items from a public repository
-async function loadCatalogPage(endpoint, targetGrid) {
+// Fetch trending data from API
+async function getPopularAnime() {
     try {
-        const response = await fetch(`${ANIME_API_URL}${endpoint}`);
-        const result = await response.json();
-        if(result.data) {
-            targetGrid.innerHTML = '';
-            result.data.forEach(anime => {
-                const card = document.createElement('div');
-                card.className = 'anime-card';
-                card.innerHTML = `
-                    <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-                    <h4>${anime.title}</h4>
-                `;
-                card.addEventListener('click', () => fetchDetailsAndOpen(anime.mal_id));
-                targetGrid.appendChild(card);
-            });
-        }
-    } catch (err) {
-        console.error("Catalog Loading error: ", err);
+        const response = await fetch(`${ANIME_API}/top-airing`);
+        const data = await response.json();
+        renderAnimeGrid(data.results);
+    } catch (error) {
+        console.error("API Error:", error);
+        document.getElementById('popularGrid').innerHTML = "<p class='loading-text'>Failed to connect to media servers. Please reload page.</p>";
     }
 }
 
-// Queries data configuration dynamically 
-async function fetchDetailsAndOpen(id) {
-    try {
-        const response = await fetch(`${ANIME_API_URL}/anime/${id}`);
-        const result = await response.json();
-        if (result.data) {
-            currentAnimeData = result.data;
-            openVideoDashboard(currentAnimeData);
-        }
-    } catch (err) {
-        alert("Failed to sync structural listing metadata.");
-    }
-}
+// Build cards into the HTML document
+function renderAnimeGrid(animeList) {
+    const grid = document.getElementById('popularGrid');
+    grid.innerHTML = ""; // Wipe loading text
 
-// Map parameters to player elements 
-function openVideoDashboard(anime) {
-    homeView.classList.add('hidden');
-    playerView.classList.remove('hidden');
-
-    document.getElementById('player-title').innerText = anime.title;
-    document.getElementById('player-rating').innerHTML = `<i class="fas fa-star text-cyan"></i> ${anime.score || 'N/A'}`;
-    document.getElementById('player-status').innerText = anime.status;
-    document.getElementById('player-description').innerText = anime.synopsis || "No description loaded.";
-
-    generateEpisodesList(anime.episodes || 12);
-}
-
-// Switches track definitions safely between SUB and DUB elements
-function generateEpisodesList(totalEpisodes) {
-    episodeContainer.innerHTML = '';
-    
-    // Simulating Sub / Dub source switching configurations cleanly
-    for(let i = 1; i <= totalEpisodes; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'episode-btn';
-        btn.innerText = `Episode ${i} (${activeLanguage.toUpperCase()})`;
+    animeList.forEach(anime => {
+        const card = document.createElement('div');
+        card.classList.add('anime-card');
+        card.innerHTML = `
+            <img class="anime-poster" src="${anime.image}" alt="${anime.title}" loading="lazy">
+            <div class="anime-info">
+                <div class="anime-title" title="${anime.title}">${anime.title}</div>
+                <div class="anime-meta">${anime.latestEpisode || 'Episode 1'}</div>
+            </div>
+        `;
         
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Uses open trailer/demo files since copyrighted commercial source arrays are illegal to host directly
-            if (currentAnimeData.trailer && currentAnimeData.trailer.youtube_id) {
-                // In a production environment with proper distribution licenses, this source URL 
-                // would target your licensed streaming server or HLS (.m3u8) cloud stream directory.
-                videoPlayer.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-            } else {
-                videoPlayer.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElevatorMusic.mp4";
-            }
-            videoPlayer.play();
-        });
-        episodeContainer.appendChild(btn);
-    }
+        // Listen for a click to initiate streaming player setup
+        card.addEventListener('click', () => startStreaming(anime.id, anime.title));
+        grid.appendChild(card);
+    });
 }
 
-function setupLanguageControls() {
-    btnSub.addEventListener('click', () => {
-        if(activeLanguage === 'sub') return;
-        activeLanguage = 'sub';
-        btnSub.classList.add('active');
-        btnDub.classList.remove('active');
-        if(currentAnimeData) generateEpisodesList(currentAnimeData.episodes || 12);
-    });
+// Target streaming IDs and insert live video feeds
+async function startStreaming(id, title) {
+    const playerSection = document.getElementById('playerSection');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const playingTitle = document.getElementById('playingTitle');
 
-    btnDub.addEventListener('click', () => {
-        if(activeLanguage === 'dub') return;
-        activeLanguage = 'dub';
-        btnDub.classList.add('active');
-        btnSub.classList.remove('active');
-        if(currentAnimeData) generateEpisodesList(currentAnimeData.episodes || 12);
-    });
+    playingTitle.innerText = `Fetching streams for ${title}...`;
+    playerSection.style.display = "block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    try {
+        // Request deep details/episode layout list for targeted anime
+        const response = await fetch(`${ANIME_API}/info/${id}`);
+        const data = await response.json();
+        
+        if (data.episodes && data.episodes.length > 0) {
+            // Pick first episode asset variant for direct feed
+            const targetedEpisode = data.episodes[0].id;
+            
+            playingTitle.innerText = `Now Playing: ${title} - Episode 1`;
+            videoPlayer.src = `${PLAYER_EMBED}${targetedEpisode}`;
+        } else {
+            playingTitle.innerText = "No playable video source found for this series.";
+        }
+    } catch (error) {
+        console.error("Streaming error:", error);
+        playingTitle.innerText = "Network streaming link error occurred.";
+    }
 }
