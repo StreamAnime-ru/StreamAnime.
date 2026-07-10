@@ -1,139 +1,415 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: #0b0c10;
-    color: #ffffff;
-}
-
-header {
-    background-color: #1f2833;
-    padding: 15px 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 2px solid #151a21;
-}
-
-.logo {
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.logo span {
-    color: #4ed5a4; /* Zoro / 9Anime Green */
-}
-
-.container {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Video Player Styling */
-.player-container {
-    display: none;
-    margin-bottom: 40px;
-    background: #151a21;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #2b3542;
-}
-
-.player-container h2 {
-    margin-bottom: 15px;
-    color: #4ed5a4;
-    font-size: 18px;
-}
-
-.video-wrapper {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-    overflow: hidden;
+    top: 10px;
+    left: 10px;
+    background: rgba(7, 8, 10, 0.75);
+    backdrop-filter: blur(4px);
+    padding: 2px 8px;
     border-radius: 6px;
-    background: #000;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
-
-.video-wrapper iframe {
+.card-score-badge {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(245, 158, 11, 0.9);
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.card-details-box { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
+.card-main-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.card-subtext-meta { font-size: 0.78rem; color: var(--text-secondary-muted); display: flex; justify-content: space-between; }
+
+/* Anime Resource Detailed Layout Page View Sheet Modules Styling */
+.details-banner-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 450px;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-deep-cinematic);
+}
+.banner-blur-bg {
+    position: absolute;
     width: 100%;
     height: 100%;
-    border: none;
+    background-size: cover;
+    background-position: center;
+    filter: blur(40px) brightness(0.4);
+    transform: scale(1.1);
 }
+.banner-gradient-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, var(--bg-primary-dark) 0%, rgba(0,0,0,0.2) 100%);
+}
+.details-header-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+}
+.back-nav-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary-white);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+    transition: var(--transition-standard-smooth);
+}
+.back-nav-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateX(-4px); }
 
-/* Section Layouts */
-.section-title {
-    font-size: 20px;
+.details-layout-flex { display: flex; gap: 40px; align-items: flex-start; }
+.details-main-poster {
+    width: 240px;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: var(--shadow-deep-cinematic);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.details-text-meta { flex-grow: 1; }
+#detailsTitle { font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 4px; }
+.alt-title { font-size: 1.1rem; color: var(--text-secondary-muted); font-weight: 400; margin-bottom: 16px; }
+
+.details-tags-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.genre-tag {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+.details-stats-bar {
+    display: flex;
+    gap: 24px;
+    font-size: 0.95rem;
+    color: var(--text-secondary-muted);
     margin-bottom: 20px;
-    border-left: 4px solid #4ed5a4;
-    padding-left: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
+    width: fit-content;
+}
+.details-synopsis-text {
+    color: var(--text-secondary-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    max-width: 900px;
+    margin-bottom: 28px;
+}
+.details-action-buttons { display: flex; gap: 14px; }
+
+/* Structural Grid Details Columns - Episodes Grid and Feedback Component Modules */
+.details-body-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 44px;
+}
+.section-title-accent {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent-vibrant-neon);
+    padding-left: 12px;
+}
+.episodes-scroll-container {
+    background-color: var(--bg-secondary-dark);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 20px;
+    max-height: 480px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 12px;
+}
+.episode-node-item {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary-white);
+    padding: 12px 0;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-standard-smooth);
+}
+.episode-node-item:hover {
+    background-color: var(--accent-vibrant-neon);
+    color: #000;
+    border-color: var(--accent-vibrant-neon);
+}
+.episode-node-item.watched {
+    border-color: rgba(16, 185, 129, 0.4);
+    background-color: rgba(16, 185, 129, 0.05);
 }
 
-.loading-text {
-    color: #c5a880;
-    grid-column: 1 / -1;
-    text-align: center;
+/* User Critique Review & Social Messaging Interactive Feedback Layout UI */
+.community-feedback-columnBox {
+    background-color: var(--bg-secondary-dark);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+.interactive-rating-module { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; font-size: 0.92rem; }
+.star-rating-control i { color: var(--text-secondary-muted); cursor: pointer; transition: transform 0.2s; font-size: 1.1rem; }
+.star-rating-control i:hover { transform: scale(1.2); }
+.star-rating-control i.fa-solid { color: var(--accent-contrast-gold); }
+.rating-label-hint { font-weight: 600; color: var(--accent-contrast-gold); }
+
+.comments-submission-form textarea {
+    width: 100%;
+    background-color: var(--bg-primary-dark);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--text-primary-white);
+    outline: none;
+    resize: none;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+.comments-submission-form textarea:focus { border-color: var(--accent-vibrant-neon); }
+
+.rendered-comments-timeline { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; max-height: 240px; overflow-y: auto; padding-right: 4px; }
+.comment-card-node { background: rgba(0,0,0,0.2); padding: 14px; border-radius: 10px; border-left: 3px solid var(--border-glass); }
+.comment-meta-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary-muted); margin-bottom: 6px; font-weight: 600; }
+.comment-text-body { font-size: 0.88rem; color: #d1d5db; word-break: break-word; }
+
+/* Dedicated Enhanced Video Theatre Component Section Interface Modules Layer */
+.player-view-wrapper { max-width: 1100px; margin: 0 auto; }
+.player-meta-title { font-size: 1.6rem; font-weight: 700; margin: 16px 0 24px 0; }
+
+.video-theatre-box {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* Fixed 16:9 Cinema Aspect Ratio Anchor Frame */
+    background-color: #000000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-deep-cinematic);
+    margin-bottom: 32px;
+}
+#mainMediaStreamComponent {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: contain;
+}
+
+/* Customized HTML5 Dynamic Control UI Layer Array Layout */
+.player-custom-controls-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.7) 100%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0;
+    transition: opacity 0.3s ease;
     padding: 20px;
 }
+.video-theatre-box:hover .player-custom-controls-overlay { opacity: 1; }
 
-/* Anime Grid & Cards */
-.anime-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
+.overlay-top-utilities-row { display: flex; justify-content: space-between; align-items: center; }
+.stream-running-title { font-size: 0.95rem; font-weight: 500; color: rgba(255,255,255,0.8); }
+.utility-icon-btn { background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; }
+
+.overlay-center-prompt {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(16, 185, 129, 0.85);
+    width: 64px; height: 64px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform 0.2s;
 }
+.overlay-center-prompt:hover { transform: translate(-50%, -50%) scale(1.1); }
+.center-play-icon { font-size: 1.5rem; color: #000; margin-left: 4px; }
 
-.anime-card {
-    background: #1f2833;
+.skip-intro-action-badge {
+    position: absolute;
+    right: 20px; bottom: 80px;
+    background-color: rgba(7, 8, 10, 0.85);
+    border: 1px solid var(--accent-vibrant-neon);
+    color: var(--text-primary-white);
+    padding: 10px 18px;
     border-radius: 6px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid #25303d;
-}
-
-.anime-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(78, 213, 164, 0.2);
-}
-
-.anime-poster {
-    width: 100%;
-    height: 260px;
-    object-fit: cover;
-}
-
-.anime-info {
-    padding: 12px;
-}
-
-.anime-title {
-    font-size: 14px;
+    font-size: 0.85rem;
     font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #ffffff;
+    cursor: pointer;
+    transition: var(--transition-standard-smooth);
+}
+.skip-intro-action-badge:hover { background-color: var(--accent-vibrant-neon); color: #000; }
+
+.overlay-bottom-controls-bar { display: flex; flex-direction: column; gap: 14px; }
+
+/* Customized Custom Seekbar Range Slider Framework Overrides */
+.timeline-slider-container { position: relative; width: 100%; height: 6px; cursor: pointer; }
+.timeline-bar-bg { position: absolute; width: 100%; height: 100%; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+.timeline-buffered-fill { position: absolute; height: 100%; background: rgba(255,255,255,0.15); width: 0; }
+.timeline-active-progress { position: absolute; height: 100%; background: var(--accent-vibrant-neon); width: 0; }
+.hidden-native-slider {
+    position: absolute; width: 100%; top: 0; left: 0; height: 100%;
+    opacity: 0; cursor: pointer; margin: 0;
 }
 
-.anime-meta {
-    font-size: 12px;
-    color: #4ed5a4;
-    margin-top: 5px;
-    font-weight: bold;
+.controls-buttons-flex-row { display: flex; justify-content: space-between; align-items: center; }
+.controls-left-group, .controls-right-group { display: flex; align-items: center; gap: 18px; }
+.control-action-btn { background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; transition: color 0.2s; }
+.control-action-btn:hover { color: var(--accent-vibrant-neon); }
+
+.volume-interaction-module { display: flex; align-items: center; gap: 8px; }
+.volume-slider {
+    width: 70px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.2);
+    height: 4px; border-radius: 2px; outline: none; transition: width 0.2s;
+}
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #fff; cursor: pointer;
+}
+.timestamp-display-readout { font-size: 0.85rem; color: var(--text-secondary-muted); font-family: monospace; }
+
+/* Explicit Theatre Aspect State Layout Utility Rules overrides definitions */
+.video-theatre-box.theatre-mode-active {
+    max-width: 100% !important;
+    width: 100vw !important;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0;
+}
+
+/* Fallback Video Placeholder Security Information System Container Block UI */
+.stream-fallback-ui {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #0d1117;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+.fallback-message-center { text-align: center; max-width: 480px; }
+.network-streaming-icon { font-size: 3rem; color: var(--accent-contrast-gold); margin-bottom: 16px; }
+.fallback-message-center h3 { font-size: 1.3rem; margin-bottom: 8px; }
+.fallback-message-center p { font-size: 0.88rem; color: var(--text-secondary-muted); line-height: 1.5; }
+
+.player-episodes-navigation-panel { background: var(--bg-secondary-dark); border: 1px solid var(--border-glass); border-radius: 16px; padding: 24px; }
+.panel-section-header { font-size: 1.1rem; margin-bottom: 16px; font-weight: 700; color: var(--text-secondary-muted); }
+.player-episodes-flexbox { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Profile Control Dashboard Subsystem Views Components Layout Styling Rules */
+.profile-dashboard-layout { display: flex; gap: 32px; align-items: flex-start; }
+.profile-sidebar-card {
+    width: 320px; background-color: var(--bg-secondary-dark); border: 1px solid var(--border-glass);
+    border-radius: 20px; padding: 32px; text-align: center; box-shadow: var(--shadow-deep-cinematic);
+}
+.profile-avatar-block img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-vibrant-neon); margin-bottom: 16px; }
+.profile-avatar-block h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.user-status-badge { background-color: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent-contrast-gold); color: var(--accent-contrast-gold); font-size: 0.75rem; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+.card-horizontal-rule { border: 0; border-top: 1px solid var(--border-glass); margin: 24px 0; }
+.profile-account-metrics { display: flex; justify-content: space-around; }
+.metric-item-node { display: flex; flex-direction: column; }
+.metric-count-num { font-size: 1.6rem; font-weight: 800; color: var(--accent-vibrant-neon); }
+.metric-label-desc { font-size: 0.75rem; color: var(--text-secondary-muted); text-transform: uppercase; margin-top: 2px; }
+
+.profile-activity-details-panel { flex-grow: 1; }
+.panel-main-heading { font-size: 1.8rem; font-weight: 800; margin-bottom: 28px; letter-spacing: -0.5px; }
+.activity-section-block { margin-bottom: 32px; }
+.activity-block-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; }
+
+/* System Account Authentication Modal Overlay Window Modules Sheet UI styling CSS */
+.modal-window-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.75); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeInModal 0.25s ease;
+}
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card-wrapper {
+    width: 100%; max-width: 440px; border-radius: 20px; padding: 32px;
+    box-shadow: var(--shadow-deep-cinematic);
+}
+.modal-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.modal-header-row h2 { font-size: 1.35rem; font-weight: 800; }
+.modal-close-icon-btn { background: none; border: none; color: var(--text-secondary-muted); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+.modal-close-icon-btn:hover { color: #fff; }
+
+.modal-tabs-navigation { display: flex; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 4px; margin-bottom: 24px; }
+.modal-tab-toggle {
+    flex: 1; background: none; border: none; color: var(--text-secondary-muted);
+    padding: 10px 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: 6px; transition: var(--transition-standard-smooth);
+}
+.modal-tab-toggle.active { background-color: var(--bg-secondary-dark); color: var(--text-primary-white); }
+
+.modal-form-module { display: flex; flex-direction: column; gap: 18px; }
+.form-input-wrapper { display: flex; flex-direction: column; gap: 8px; }
+.form-input-wrapper label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary-muted); text-transform: uppercase; }
+.input-icon-group { position: relative; }
+.input-icon-group i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary-muted); }
+.input-icon-group input {
+    width: 100%; background-color: var(--bg-primary-dark); border: 1px solid var(--border-glass);
+    padding: 12px 16px 12px 42px; color: #fff; border-radius: 8px; outline: none; font-size: 0.92rem; transition: border-color 0.2s;
+}
+.input-icon-group input:focus { border-color: var(--accent-vibrant-neon); }
+
+/* Global System Notification Toast Alerts Mechanism Overlay System Modules UI CSS */
+.toast {
+    position: fixed; bottom: 32px; right: 32px;
+    background-color: #11141a; border-left: 4px solid var(--accent-vibrant-neon);
+    color: var(--text-primary-white); padding: 16px 28px; border-radius: 8px;
+    box-shadow: var(--shadow-deep-cinematic); z-index: 10000;
+    font-weight: 500; font-size: 0.92rem;
+    animation: slideInToast 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes slideInToast { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.global-footer { border-top: 1px solid var(--border-glass); background-color: var(--bg-secondary-dark); text-align: center; padding: 24px; font-size: 0.8rem; color: var(--text-secondary-muted); margin-top: 60px; }
+
+/* Media Breakpoint Engineering Directives Rules Framework overrides queries */
+@media (max-width: 1024px) {
+    .details-layout-flex { flex-direction: column; align-items: center; text-align: center; }
+    .details-stats-bar { margin-left: auto; margin-right: auto; }
+    .details-tags-row { justify-content: center; }
+    .details-action-buttons { justify-content: center; }
+    .details-body-layout-grid { grid-template-columns: 1fr; }
+    .profile-dashboard-layout { flex-direction: column; align-items: center; }
+    .profile-sidebar-card { width: 100%; max-width: 450px; }
+}
+
+@media (max-width: 768px) {
+    .nav-links, .search-wrapper, #userAvatarContainer span, .dropdown-arrow { display: none !important; }
+    .mobile-menu-toggle { display: block; }
+    .main-content { padding: 16px; }
+    .hero-carousel { height: 350px; }
+    .hero-title { font-size: 1.8rem; }
+    .hero-content { padding: 24px; }
+    .anime-cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+    .anime-card-component { height: 290px; }
+    .card-image-wrap { height: 200px; }
+    #detailsTitle { font-size: 1.8rem; }
 }
