@@ -3,7 +3,7 @@
  * Powered by Jikan REST API (MyAnimeList open-source integration)
  */
 
-const API_BASE = 'http://api.tatakai.me/';
+const API_BASE = 'https://aniwatch-api-v1-0.onrender.com';
 
 // Application State Layer
 const AppState = {
