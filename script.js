@@ -3,7 +3,7 @@
  * Powered by Jikan REST API (MyAnimeList open-source integration)
  */
 
-const API_BASE = 'https://api.jikan.moe/v4';
+const API_BASE = 'https://9anime.to';
 
 // Application State Layer
 const AppState = {
