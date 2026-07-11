@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HaruAnime - Stream Authorized Anime</title>
-    <meta name="description" content="Explore, track, and watch legally authorized anime titles with beautiful glassmorphism design.">
+    <title>AniStream - Discover & Track Anime Legally</title>
+    <meta name="description" content="Explore popular, trending, and top-rated anime with official streaming links, advanced filters, and personalized watchlists.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,251 +12,216 @@
 
     <header class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" id="nav-logo"><i class="fa-solid fa-play"></i> Haru<span>Anime</span></a>
+            <a href="#" class="logo" id="logo-btn">
+                <i class="fa-solid fa-bolt"></i> Ani<span>Stream</span>
+            </a>
             
-            <nav class="nav-links">
-                <a href="#" class="nav-item active" data-target="home-view">Home</a>
-                <a href="#" class="nav-item" data-target="watchlist-view">Watchlist</a>
+            <nav class="nav-menu" id="nav-menu">
+                <a href="#" class="nav-link active" data-target="home-page">Home</a>
+                <a href="#" class="nav-link" data-target="explore-page">Explore</a>
+                <a href="#" class="nav-link" data-target="library-page">My Library</a>
             </nav>
 
-            <div class="search-container">
+            <div class="search-wrapper">
                 <div class="search-box">
-                    <input type="text" id="global-search" placeholder="Search anime...">
-                    <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="search-input" placeholder="Search anime...">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 </div>
-                <div id="autocomplete-results" class="autocomplete-dropdown hidden"></div>
+                <div id="suggestions-box" class="suggestions-dropdown hidden"></div>
             </div>
 
-            <div class="auth-nav-section" id="auth-nav-zone">
-                </div>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
     </header>
 
-    <main id="view-container">
+    <main id="main-content">
         
-        <section id="home-view" class="view">
-            <div class="hero-slider" id="hero-slider-container">
-                <div class="hero-loading">Loading featured titles...</div>
+        <section id="home-page" class="view-page">
+            <div class="hero-banner" id="hero-container">
+                <div class="skeleton-hero"></div>
             </div>
 
-            <div class="main-layout">
-                <div class="content-column">
-                    <div class="filter-panel glass">
-                        <h3><i class="fa-solid fa-sliders"></i> Advanced Discovery Filters</h3>
-                        <div class="filter-grid">
-                            <select id="filter-genre"><option value="">All Genres</option></select>
-                            <select id="filter-year">
-                                <option value="">All Years</option>
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                            </select>
-                            <select id="filter-season">
-                                <option value="">All Seasons</option>
-                                <option value="spring">Spring</option>
-                                <option value="summer">Summer</option>
-                                <option value="fall">Fall</option>
-                                <option value="winter">Winter</option>
-                            </select>
-                            <select id="filter-status">
-                                <option value="">All Statuses</option>
-                                <option value="airing">Airing</option>
-                                <option value="complete">Completed</option>
-                                <option value="upcoming">Upcoming</option>
-                            </select>
-                            <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
-                        </div>
-                    </div>
+            <div id="continue-section" class="section-container hidden">
+                <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Continue Watching</h2>
+                <div class="card-grid" id="continue-grid"></div>
+            </div>
 
-                    <div id="continue-watching-section" class="anime-section hidden">
-                        <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Continue Watching</h2>
-                        <div class="anime-grid" id="continue-watching-grid"></div>
-                    </div>
+            <div class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending Now</h2>
+                <div class="card-grid" id="trending-grid"></div>
+            </div>
 
-                    <div class="anime-section">
-                        <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending Now</h2>
-                        <div class="anime-grid" id="trending-grid"></div>
-                    </div>
+            <div class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-star"></i> Popular This Season</h2>
+                <div class="card-grid" id="popular-grid"></div>
+            </div>
 
-                    <div class="anime-section">
-                        <h2 class="section-title"><i class="fa-solid fa-star"></i> Popular This Week</h2>
-                        <div class="anime-grid" id="popular-grid"></div>
-                    </div>
-
-                    <div class="anime-section">
-                        <h2 class="section-title"><i class="fa-solid fa-layer-group"></i> Latest Episodes</h2>
-                        <div class="anime-grid" id="latest-grid"></div>
-                    </div>
-                </div>
-
-                <aside class="sidebar-column">
-                    <div class="sidebar-card glass">
-                        <h3><i class="fa-solid fa-tags"></i> Top Genres</h3>
-                        <div class="genre-cloud" id="genre-cloud-container"></div>
-                    </div>
-                    
-                    <div class="sidebar-card glass">
-                        <h3><i class="fa-solid fa-ranking-star"></i> Recently Added</h3>
-                        <div class="mini-list" id="recent-added-list"></div>
-                    </div>
-                </aside>
+            <div class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-satellite-dish"></i> Currently Airing</h2>
+                <div class="card-grid" id="airing-grid"></div>
             </div>
         </section>
 
-        <section id="details-view" class="view hidden">
-            <div class="details-banner-wrap">
+        <section id="explore-page" class="view-page hidden">
+            <div class="explore-header">
+                <h2><i class="fa-solid fa-compass"></i> Advanced Anime Discovery</h2>
+            </div>
+
+            <div class="filter-panel glass">
+                <div class="filter-group">
+                    <label for="filter-genre">Genre</label>
+                    <select id="filter-genre">
+                        <option value="">All Genres</option>
+                        <option value="1">Action</option>
+                        <option value="2">Adventure</option>
+                        <option value="4">Comedy</option>
+                        <option value="8">Drama</option>
+                        <option value="10">Fantasy</option>
+                        <option value="24">Sci-Fi</option>
+                        <option value="36">Slice of Life</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-season">Season</label>
+                    <select id="filter-season">
+                        <option value="">All Seasons</option>
+                        <option value="spring">Spring</option>
+                        <option value="summer">Summer</option>
+                        <option value="fall">Fall</option>
+                        <option value="winter">Winter</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-year">Year</label>
+                    <select id="filter-year">
+                        <option value="">All Years</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-format">Format</label>
+                    <select id="filter-format">
+                        <option value="">All Formats</option>
+                        <option value="tv">TV Show</option>
+                        <option value="movie">Movie</option>
+                        <option value="ova">OVA</option>
+                        <option value="special">Special</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-status">Status</label>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="airing">Currently Airing</option>
+                        <option value="complete">Completed</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-by">Sort By</label>
+                    <select id="sort-by">
+                        <option value="popularity">Popularity</option>
+                        <option value="score">Score</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card-grid" id="explore-results-grid"></div>
+            
+            <div id="loader-anchor" class="loader-container">
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <section id="details-page" class="view-page hidden">
+            <div class="details-banner-wrapper">
                 <div class="details-backdrop" id="detail-backdrop"></div>
                 <div class="details-banner-overlay"></div>
                 <div class="details-header-content">
-                    <img src="" alt="Cover Art" class="detail-cover-img" id="detail-cover">
-                    <div class="detail-main-info">
+                    <img src="" alt="Poster" class="detail-poster" id="detail-poster">
+                    <div class="detail-meta-main">
                         <h1 id="detail-title">Anime Title</h1>
-                        <p class="detail-studio" id="detail-studio">Studio Name</p>
-                        <div class="meta-badges">
-                            <span id="detail-rating"><i class="fa-solid fa-star"></i> 0.0</span>
-                            <span id="detail-type">TV</span>
-                            <span id="detail-status">Finished Airing</span>
+                        <div class="badge-row">
+                            <span class="badge score-badge" id="detail-score"><i class="fa-solid fa-star"></i> 0.0</span>
+                            <span class="badge" id="detail-format">TV</span>
+                            <span class="badge" id="detail-status">Finished Airing</span>
                         </div>
-                        <div class="genre-tags" id="detail-genres"></div>
-                        <div class="action-buttons">
-                            <button id="detail-play-btn" class="btn-primary btn-large"><i class="fa-solid fa-play"></i> Watch Episode 1</button>
-                            <button id="detail-watchlist-btn" class="btn-secondary"><i class="fa-solid fa-plus"></i> Add to Watchlist</button>
-                            <button id="detail-fav-btn" class="btn-secondary"><i class="fa-solid fa-heart"></i> Favorite</button>
+                        <div class="genre-container" id="detail-genres"></div>
+                        
+                        <div class="action-row">
+                            <button id="btn-watchlist" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Watchlist</button>
+                            <button id="btn-favorite" class="btn btn-secondary"><i class="fa-solid fa-heart"></i> Favorite</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="details-body-layout">
+            <div class="details-body-grid">
                 <div class="details-main-pane">
-                    <div class="glass-card panel">
+                    <div class="glass-card">
                         <h3>Synopsis</h3>
-                        <p id="detail-description" class="synopsis-text"></p>
+                        <p id="detail-synopsis" class="synopsis-text">Anime structural synopsis data description strings go here...</p>
                     </div>
 
-                    <div class="glass-card panel">
-                        <h3>Episodes</h3>
-                        <div class="episode-list-grid" id="detail-episodes-grid"></div>
-                    </div>
-
-                    <div class="glass-card panel comments-container">
-                        <h3>Community Comments (<span id="comment-count">0</span>)</h3>
-                        <div class="add-comment-box">
-                            <textarea id="comment-input" placeholder="Join the discussion legal & clean..."></textarea>
-                            <button id="submit-comment-btn" class="btn-primary">Post Comment</button>
-                        </div>
-                        <div class="comments-list" id="comments-wrapper"></div>
+                    <div class="glass-card">
+                        <h3>Watch Legally / Official Stream Providers</h3>
+                        <div class="streaming-links-grid" id="detail-streams">
+                            </div>
                     </div>
                 </div>
 
-                <aside class="details-side-pane">
-                    <div class="glass-card panel">
-                        <h3>Recommended Matches</h3>
-                        <div class="mini-list" id="detail-recommendations"></div>
+                <div class="details-sidebar-pane">
+                    <div class="glass-card detail-info-list">
+                        <h3>Information</h3>
+                        <div><strong>Studios:</strong> <span id="info-studios">N/A</span></div>
+                        <div><strong>Episodes:</strong> <span id="info-episodes">N/A</span></div>
+                        <div><strong>Released:</strong> <span id="info-released">N/A</span></div>
+                        <div><strong>Season:</strong> <span id="info-season">N/A</span></div>
                     </div>
-                </aside>
-            </div>
-        </section>
-
-        <section id="player-view" class="view hidden">
-            <div class="player-container-layout">
-                <div class="player-left-block">
-                    <div class="video-player-wrapper" id="custom-player-wrapper">
-                        <video id="main-video-element" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" preload="auto"></video>
-                        
-                        <div class="video-overlay-btn hidden" id="skip-intro-btn">Skip Intro</div>
-                        
-                        <div class="player-controls-hud">
-                            <div class="progress-bar-container" id="player-progress-container">
-                                <div class="progress-filled" id="player-progress-fill"></div>
-                            </div>
-                            <div class="controls-row">
-                                <div class="left-controls">
-                                    <button id="player-play-btn"><i class="fa-solid fa-play"></i></button>
-                                    <button id="player-prev-btn"><i class="fa-solid fa-backward-step"></i></button>
-                                    <button id="player-next-btn"><i class="fa-solid fa-forward-step"></i></button>
-                                    <span class="time-display" id="player-time">0:00 / 0:00</span>
-                                </div>
-                                <div class="right-controls">
-                                    <button id="player-fullscreen-btn"><i class="fa-solid fa-expand"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <div class="glass-card">
+                        <h3>Recently Viewed</h3>
+                        <div class="mini-list" id="recently-viewed-sidebar"></div>
                     </div>
-
-                    <div class="player-meta-info glass-card">
-                        <h2 id="player-anime-title">Anime Title Loading...</h2>
-                        <h4 id="player-episode-title">Episode X</h4>
-                    </div>
-                </div>
-
-                <div class="player-right-block glass-card">
-                    <h3>Select Episode</h3>
-                    <div class="player-episode-sidebar" id="player-sidebar-episodes"></div>
                 </div>
             </div>
         </section>
 
-        <section id="watchlist-view" class="view hidden">
-            <div class="profile-header-card glass">
-                <div class="profile-avatar"><i class="fa-solid fa-user-ninja"></i></div>
-                <div class="profile-meta-text">
-                    <h2 id="profile-username-display">Guest User</h2>
-                    <p>Status: Collector Tier</p>
-                </div>
-            </div>
-            
-            <div class="anime-section">
+        <section id="library-page" class="view-page hidden">
+            <div class="section-container">
                 <h2 class="section-title"><i class="fa-solid fa-bookmark"></i> My Watchlist</h2>
-                <div class="anime-grid" id="user-watchlist-grid"></div>
+                <div class="card-grid" id="watchlist-grid"></div>
             </div>
 
-            <div class="anime-section">
-                <h2 class="section-title"><i class="fa-solid fa-heart"></i> Favorites</h2>
-                <div class="anime-grid" id="user-favorites-grid"></div>
+            <div class="section-container">
+                <h2 class="section-title"><i class="fa-solid fa-heart"></i> My Favorites</h2>
+                <div class="card-grid" id="favorites-grid"></div>
             </div>
         </section>
 
     </main>
 
-    <div class="auth-modal-overlay hidden" id="auth-modal">
-        <div class="auth-modal-box glass">
-            <button class="close-modal-btn" id="close-auth-btn"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="tab-headers">
-                <button class="tab-btn active" id="tab-login-btn">Login</button>
-                <button class="tab-btn" id="tab-signup-btn">Sign Up</button>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo"><i class="fa-solid fa-bolt"></i> Ani<span>Stream</span></a>
+                <p>Track your seasonal anime journeys and access official streaming routes seamlessly.</p>
             </div>
-
-            <form id="login-form" class="auth-form">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="login-user" required placeholder="Enter username...">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="login-pass" required placeholder="Enter password...">
-                </div>
-                <button type="submit" class="btn-primary w-full">Sign In</button>
-            </form>
-
-            <form id="signup-form" class="auth-form hidden">
-                <div class="form-group">
-                    <label>Create Username</label>
-                    <input type="text" id="signup-user" required placeholder="Min 3 characters...">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="signup-pass" required placeholder="Secure password...">
-                </div>
-                <button type="submit" class="btn-primary w-full">Create Account</button>
-            </form>
+            <div class="footer-socials">
+                <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            </div>
         </div>
-    </div>
-
-    <footer class="global-footer">
-        <p>&copy; 2026 HaruAnime. Designed for high performance. Content references via public authorized metadata APIs.</p>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AniStream. Built with pure performance front-end engineering.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
