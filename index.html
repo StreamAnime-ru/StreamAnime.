@@ -9,75 +9,85 @@
 </head>
 <body>
 
-    <nav class="navbar">
+    <header class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" id="logo"><i class="fa-solid fa-play"></i> AniStream</a>
+            <a href="#" class="logo" id="logo-btn"><i class="fa-solid fa-play"></i> AniStream</a>
             
+            <nav class="nav-links">
+                <a href="#" class="nav-link active" data-target="home-page">Home</a>
+                <a href="#" class="nav-link" data-target="browse-page" id="browse-nav-btn">Browse</a>
+                <a href="#" class="nav-link" data-target="library-page">My Library</a>
+            </nav>
+
             <div class="search-container">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Search anime...">
                     <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
-                <div class="search-suggestions" id="suggestions"></div>
+                <div class="search-suggestions" id="search-suggestions"></div>
             </div>
 
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#" class="nav-item active" data-target="home-page">Home</a></li>
-                <li><a href="#" class="nav-item" data-target="browse-page">Browse</a></li>
-                <li><a href="#" class="nav-item" data-target="library-page">My Library</a></li>
-            </ul>
-
-            <div class="burger" id="burger">
-                <div class="line1"></div>
-                <div class="line2"></div>
-                <div class="line3"></div>
-            </div>
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
-    </nav>
+    </header>
 
-    <main id="main-content">
-        
-        <section id="home-page" class="page-section active">
-            <div class="hero-slider" id="hero-slider">
-                <div class="skeleton loading-hero"></div>
+    <main class="main-content">
+
+        <section id="home-page" class="page-view active">
+            <div class="hero-spotlight" id="hero-spotlight">
+                <div class="hero-skeleton"></div>
             </div>
 
-            <div class="content-section hidden" id="recent-section">
+            <div class="content-section hidden" id="continue-watching-section">
                 <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Continue Watching</h2>
-                <div class="anime-grid" id="recent-grid"></div>
+                <div class="anime-grid mini-grid" id="continue-watching-grid"></div>
             </div>
 
             <div class="content-section">
-                <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending Now</h2>
-                <div class="anime-grid" id="trending-grid">
-                    <div class="skeleton card-skeleton"></div>
-                    <div class="skeleton card-skeleton"></div>
-                    <div class="skeleton card-skeleton"></div>
-                    <div class="skeleton card-skeleton"></div>
-                    <div class="skeleton card-skeleton"></div>
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending Now</h2>
+                    <button class="view-more-btn" data-category="airing">View All</button>
                 </div>
+                <div class="anime-grid" id="trending-grid"></div>
             </div>
 
             <div class="content-section">
-                <h2 class="section-title"><i class="fa-solid fa-star"></i> Popular Shows</h2>
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-star"></i> Most Popular</h2>
+                    <button class="view-more-btn" data-category="bypopularity">View All</button>
+                </div>
                 <div class="anime-grid" id="popular-grid"></div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-calendar-days"></i> Top Movies</h2>
+                    <button class="view-more-btn" data-category="movie">View All</button>
+                </div>
+                <div class="anime-grid" id="movies-grid"></div>
             </div>
         </section>
 
-        <section id="browse-page" class="page-section">
-            <h2 class="section-title">Browse Anime</h2>
+        <section id="browse-page" class="page-view">
+            <h2 class="page-title">Browse Anime</h2>
             
-            <div class="filter-panel">
+            <div class="filters-wrapper">
                 <div class="filter-group">
                     <label>Genre</label>
                     <select id="filter-genre">
                         <option value="">All Genres</option>
-                        <option value="action">Action</option>
-                        <option value="adventure">Adventure</option>
-                        <option value="comedy">Comedy</option>
-                        <option value="drama">Drama</option>
-                        <option value="fantasy">Fantasy</option>
-                        <option value="sci-fi">Sci-Fi</option>
+                        <option value="1">Action</option>
+                        <option value="2">Adventure</option>
+                        <option value="4">Comedy</option>
+                        <option value="8">Drama</option>
+                        <option value="10">Fantasy</option>
+                        <option value="22">Romance</option>
+                        <option value="24">Sci-Fi</option>
+                        <option value="36">Slice of Life</option>
+                        <option value="37">Supernatural</option>
+                        <option value="41">Suspense</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -87,6 +97,16 @@
                         <option value="tv">TV Series</option>
                         <option value="movie">Movie</option>
                         <option value="ova">OVA</option>
+                        <option value="special">Special</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="airing">Currently Airing</option>
+                        <option value="complete">Finished</option>
+                        <option value="upcoming">Upcoming</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -96,42 +116,49 @@
                         <option value="score">Top Rated</option>
                     </select>
                 </div>
-                <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
+                <button id="apply-filters-btn" class="apply-btn">Apply Filters</button>
             </div>
 
             <div class="anime-grid" id="browse-grid"></div>
             
-            <div class="pagination">
-                <button id="prev-page" disabled><i class="fa-solid fa-chevron-left"></i> Prev</button>
+            <div class="pagination-container">
+                <button id="prev-page-btn" disabled><i class="fa-solid fa-chevron-left"></i> Prev</button>
                 <span id="page-number">Page 1</span>
-                <button id="next-page">Next <i class="fa-solid fa-chevron-right"></i></button>
+                <button id="next-page-btn">Next <i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </section>
 
-        <section id="library-page" class="page-section">
+        <section id="detail-page" class="page-view">
+            <div id="detail-container"></div>
+        </section>
+
+        <section id="library-page" class="page-view">
+            <h2 class="page-title">My Library</h2>
             <div class="library-tabs">
                 <button class="lib-tab active" data-lib="watchlist">Watchlist</button>
                 <button class="lib-tab" data-lib="favorites">Favorites</button>
+                <button class="lib-tab" data-lib="history">Recently Viewed</button>
             </div>
             <div class="anime-grid" id="library-grid"></div>
         </section>
 
-        <section id="details-page" class="page-section">
-            <button class="back-btn" id="back-to-home"><i class="fa-solid fa-arrow-left"></i> Back</button>
-            <div id="details-container">
-                </div>
-        </section>
-
     </main>
 
-    <footer>
+    <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2026 AniStream. Built with pure performance.</p>
-            <div class="social-links">
+            <div class="footer-info">
+                <h3>AniStream</h3>
+                <p>Track, explore, and find official streaming platforms for your favorite anime series.</p>
+            </div>
+            <div class="footer-links">
                 <a href="#"><i class="fa-brands fa-twitter"></i></a>
                 <a href="#"><i class="fa-brands fa-discord"></i></a>
+                <a href="#"><i class="fa-brands fa-reddit"></i></a>
                 <a href="#"><i class="fa-brands fa-github"></i></a>
             </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 AniStream. Data powered by Jikan API.
         </div>
     </footer>
 
