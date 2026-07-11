@@ -3,473 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamAnime - Official Legal Streaming Platform</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome icons via cdn -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>AniStream - Premium Legal Anime Streaming</title>
+    <meta name="description" content="Stream your favorite legal anime titles with high quality, fast loading, and zero tracking.">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Notification Banner -->
-    <div id="toastNotification" class="toast hidden"></div>
-
-    <!-- Main Navigation Bar -->
-    <header class="main-header">
-        <div class="header-container">
-            <div class="brand" id="brandLogo">
-                <i class="fa-solid fa-circle-play logo-icon"></i>
-                <span class="logo-text">Stream<span class="accent-text">Anime</span></span>
-            </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" id="nav-logo"><i class="fa-solid fa-play"></i> AniStream</a>
             
-            <nav class="nav-links">
-                <a href="#" class="nav-item active" data-target="homeView"><i class="fa-solid fa-house"></i> Home</a>
-                <a href="#" class="nav-item" data-target="watchlistView"><i class="fa-solid fa-bookmark"></i> Watchlist</a>
-                <a href="#" class="nav-item" data-target="historyView"><i class="fa-solid fa-history"></i> History</a>
-            </nav>
-
-            <div class="header-actions">
-                <div class="search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="globalSearch" placeholder="Search anime, genres, studios..." autocomplete="off">
-                    <div id="autocompleteDropdown" class="autocomplete-box hidden"></div>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search anime...">
+                    <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
-                
-                <div class="user-profile-menu" id="authMenuTrigger">
-                    <div id="userAvatarContainer" class="avatar-container hidden">
-                        <img id="headerAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" alt="Profile">
-                        <span id="headerUsername">User</span>
-                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <button id="loginTriggerBtn" class="btn btn-primary btn-sm"><i class="fa-solid fa-user"></i> Login</button>
-                    
-                    <div id="profileDropdown" class="profile-dropdown-box hidden">
-                        <a href="#" class="dropdown-item" id="goToProfileBtn"><i class="fa-solid fa-id-card"></i> View Profile</a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item text-danger" id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
-                    </div>
+                <div id="autocomplete-results" class="autocomplete-dropdown hidden"></div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="watchlist-toggle-btn" class="nav-btn" title="Watchlist"><i class="fa-solid fa-bookmark"></i></button>
+                <button id="auth-btn" class="nav-btn primary-btn">Login</button>
+                <div id="user-menu" class="user-menu hidden">
+                    <span id="username-display">User</span>
+                    <button id="logout-btn" class="nav-btn secondary-btn">Logout</button>
                 </div>
             </div>
-            
-            <button class="mobile-menu-toggle" id="mobileMenuToggle">
-                <i class="fa-solid fa-bars"></i>
-            </button>
         </div>
-    </header>
+    </nav>
 
-    <!-- Mobile Navigation Drawer -->
-    <div class="mobile-drawer" id="mobileDrawer">
-        <div class="drawer-header">
-            <span class="logo-text">Stream<span class="accent-text">Anime</span></span>
-            <button id="closeDrawerBtn"><i class="fa-solid fa-times"></i></button>
-        </div>
-        <nav class="drawer-nav">
-            <a href="#" class="drawer-item active" data-target="homeView"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#" class="drawer-item" data-target="watchlistView"><i class="fa-solid fa-bookmark"></i> My Watchlist</a>
-            <a href="#" class="drawer-item" data-target="historyView"><i class="fa-solid fa-history"></i> History</a>
-        </nav>
-    </div>
-    <div class="drawer-overlay" id="drawerOverlay"></div>
-
-    <!-- Main Content Wrapper -->
-    <main class="main-content">
+    <main id="app-container">
         
-        <!-- ================= HOMEPAGE VIEW ================= -->
-        <section id="homeView" class="view-panel">
-            <!-- Hero Spotlight Slider Section -->
-            <div class="hero-carousel" id="heroCarousel">
-                <div class="hero-slide-track" id="heroTrack">
-                    <!-- Loaded dynamically via script.js from Jikan Top Airing -->
-                    <div class="hero-placeholder-shimmer"></div>
-                </div>
-            </div>
-
-            <!-- Advanced Multi-Filter Controls Accordion Component -->
-            <div class="filter-dashboard">
-                <div class="filter-header-bar" id="filterHeaderToggle">
-                    <span class="filter-title-text"><i class="fa-solid fa-sliders"></i> Advanced Search Filter Discovery Matrix</span>
-                    <i class="fa-solid fa-chevron-down filter-toggle-icon"></i>
-                </div>
-                <div class="filter-body-content hidden" id="filterBody">
-                    <div class="filter-grid-inputs">
-                        <div class="filter-control-group">
-                            <label>Genre Classification</label>
-                            <select id="filterGenre">
-                                <option value="">All Genres</option>
-                                <option value="1">Action</option>
-                                <option value="2">Adventure</option>
-                                <option value="4">Comedy</option>
-                                <option value="8">Drama</option>
-                                <option value="10">Fantasy</option>
-                                <option value="22">Romance</option>
-                                <option value="24">Sci-Fi</option>
-                                <option value="36">Slice of Life</option>
-                                <option value="37">Supernatural</option>
-                            </select>
-                        </div>
-                        <div class="filter-control-group">
-                            <label>Broadcast Status</label>
-                            <select id="filterStatus">
-                                <option value="">All Statuses</option>
-                                <option value="airing">Currently Airing</option>
-                                <option value="complete">Finished Airing</option>
-                                <option value="upcoming">Upcoming Releases</option>
-                            </select>
-                        </div>
-                        <div class="filter-control-group">
-                            <label>Production Rating</label>
-                            <select id="filterRating">
-                                <option value="">All Ratings</option>
-                                <option value="g">G - All Ages</option>
-                                <option value="pg">PG - Children</option>
-                                <option value="pg13">PG-13 - Teens</option>
-                                <option value="r17">R - 17+ Violence</option>
-                            </select>
-                        </div>
-                        <div class="filter-control-group">
-                            <label>Content Type</label>
-                            <select id="filterType">
-                                <option value="">All Formats</option>
-                                <option value="tv">TV Series</option>
-                                <option value="movie">Theatrical Movies</option>
-                                <option value="ova">OVA</option>
-                                <option value="special">Specials</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="filter-actions-row">
-                        <button id="clearFiltersBtn" class="btn btn-secondary btn-sm">Reset Filters</button>
-                        <button id="applyFiltersBtn" class="btn btn-primary btn-sm">Apply Query Filters</button>
+        <section id="home-view" class="view">
+            <div class="hero-banner" id="hero-banner">
+                <div class="hero-content">
+                    <h1 id="hero-title">Loading Featured Anime...</h1>
+                    <p id="hero-desc">...</p>
+                    <div class="hero-buttons">
+                        <button id="hero-play-btn" class="btn active-btn"><i class="fa-solid fa-play"></i> Watch Now</button>
+                        <button id="hero-details-btn" class="btn secondary-btn"><i class="fa-solid fa-info"></i> Details</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Dynamic Search Results Section (Shown only during active queries) -->
-            <div id="searchResultsSection" class="content-shelf hidden">
-                <div class="shelf-header">
-                    <h2 class="shelf-title" id="searchResultTitle">Query Search Results</h2>
-                    <button class="btn btn-secondary btn-xs" id="closeSearchGridBtn"><i class="fa-solid fa-times"></i> Clear Search</button>
+            <div class="filter-section container">
+                <h3><i class="fa-solid fa-sliders"></i> Advanced Discovery</h3>
+                <div class="filter-grid">
+                    <select id="filter-genre">
+                        <option value="">All Genres</option>
+                        <option value="Action">Action</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                    </select>
+                    <select id="filter-year">
+                        <option value="">All Years</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                    <select id="filter-season">
+                        <option value="">All Seasons</option>
+                        <option value="SPRING">Spring</option>
+                        <option value="SUMMER">Summer</option>
+                        <option value="FALL">Fall</option>
+                        <option value="WINTER">Winter</option>
+                    </select>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="FINISHED">Finished</option>
+                        <option value="RELEASING">Releasing</option>
+                    </select>
+                    <button id="apply-filters-btn" class="btn active-btn">Apply Filters</button>
                 </div>
-                <div class="anime-cards-grid" id="searchResultsGrid"></div>
             </div>
 
-            <!-- Continue Watching Shelf Component -->
-            <div id="continueWatchingShelf" class="content-shelf hidden">
-                <div class="shelf-header">
-                    <h2 class="shelf-title"><i class="fa-solid fa-circle-right text-accent"></i> Continue Watching</h2>
-                </div>
-                <div class="anime-cards-grid" id="continueWatchingGrid"></div>
+            <div class="container shelf-section">
+                <h2><i class="fa-solid fa-fire text-accent"></i> Trending Anime</h2>
+                <div class="anime-grid" id="trending-grid"></div>
             </div>
 
-            <!-- Trending Shelf Component -->
-            <div class="content-shelf">
-                <div class="shelf-header">
-                    <h2 class="shelf-title"><i class="fa-solid fa-fire text-accent"></i> Trending Highlights</h2>
-                </div>
-                <div class="anime-cards-grid" id="trendingGrid"></div>
+            <div class="container shelf-section">
+                <h2><i class="fa-solid fa-circle-play text-accent"></i> Latest Episodes</h2>
+                <div class="anime-grid" id="latest-grid"></div>
             </div>
 
-            <!-- Popular This Week Shelf Component -->
-            <div class="content-shelf">
-                <div class="shelf-header">
-                    <h2 class="shelf-title"><i class="fa-solid fa-star text-accent"></i> Highly Popular This Week</h2>
-                </div>
-                <div class="anime-cards-grid" id="popularGrid"></div>
-            </div>
-
-            <!-- Latest Shelf Component -->
-            <div class="content-shelf">
-                <div class="shelf-header">
-                    <h2 class="shelf-title"><i class="fa-solid fa-clock text-accent"></i> New Release Schedule Episodes</h2>
-                </div>
-                <div class="anime-cards-grid" id="latestGrid"></div>
-            </div>
-
-            <!-- Recently Added Shelf Component -->
-            <div class="content-shelf">
-                <div class="shelf-header">
-                    <h2 class="shelf-title"><i class="fa-solid fa-square-plus text-accent"></i> Recently Listed Collections</h2>
-                </div>
-                <div class="anime-cards-grid" id="recentlyAddedGrid"></div>
+            <div class="container shelf-section">
+                <h2><i class="fa-solid fa-star text-accent"></i> Popular This Week</h2>
+                <div class="anime-grid" id="popular-grid"></div>
             </div>
         </section>
 
-        <!-- ================= ANIME DETAILS VIEW ================= -->
-        <section id="detailsView" class="view-panel hidden">
-            <div class="details-banner-wrapper">
-                <div id="detailsBannerBlur" class="banner-blur-bg"></div>
-                <div class="banner-gradient-overlay"></div>
-                <div class="details-header-content">
-                    <button class="back-nav-btn" id="backToHomeFromDetails"><i class="fa-solid fa-arrow-left"></i> Return to Main Directory</button>
-                    <div class="details-layout-flex">
-                        <img id="detailsPoster" src="" alt="Anime Poster" class="details-main-poster">
-                        <div class="details-text-meta">
-                            <h1 id="detailsTitle">Anime Title Listing</h1>
-                            <h3 id="detailsAltTitle" class="alt-title">Alternative Title String</h3>
-                            <div class="details-tags-row" id="detailsGenres">
-                                <!-- Generated Dynamically -->
-                            </div>
-                            <div class="details-stats-bar">
-                                <span><i class="fa-solid fa-star text-accent"></i> <span id="detailsScore">8.9</span></span>
-                                <span><i class="fa-solid fa-film"></i> <span id="detailsType">TV</span></span>
-                                <span><i class="fa-solid fa-calendar"></i> <span id="detailsYear">2024</span></span>
-                                <span><i class="fa-solid fa-building"></i> <span id="detailsStudio">Studio Name</span></span>
-                            </div>
-                            <p id="detailsSynopsis" class="details-synopsis-text">Anime plot layout script narration...</p>
-                            
-                            <div class="details-action-buttons">
-                                <button id="startWatchingBtn" class="btn btn-primary btn-md"><i class="fa-solid fa-play"></i> Initiate Streaming</button>
-                                <button id="toggleWatchlistBtn" class="btn btn-secondary btn-md"><i class="fa-solid fa-bookmark"></i> Add Watchlist</button>
-                                <button id="toggleFavoriteBtn" class="btn btn-secondary btn-md"><i class="fa-solid fa-heart"></i> Favorite</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Media Infrastructure Columns: Split Episode Select List and Community Review System -->
-            <div class="details-body-layout-grid">
-                <div class="episodes-listing-columnBox">
-                    <h2 class="section-title-accent">Available Catalog Segment Tracks</h2>
-                    <div class="episodes-scroll-container" id="detailsEpisodesList">
-                        <!-- Dynamic Buttons generated via script -->
-                    </div>
-                </div>
-
-                <div class="community-feedback-columnBox">
-                    <h2 class="section-title-accent">Community Scoring Metric & Reviews</h2>
-                    
-                    <div class="interactive-rating-module">
-                        <span>User Performance Rating Input:</span>
-                        <div class="star-rating-control" id="userStarRatingSelector">
-                            <i class="fa-star fa-regular" data-score="1"></i>
-                            <i class="fa-star fa-regular" data-score="2"></i>
-                            <i class="fa-star fa-regular" data-score="3"></i>
-                            <i class="fa-star fa-regular" data-score="4"></i>
-                            <i class="fa-star fa-regular" data-score="5"></i>
-                        </div>
-                        <span id="currentRatingStatusLabel" class="rating-label-hint">Unrated</span>
-                    </div>
-
-                    <div class="comments-submission-form">
-                        <textarea id="commentInputField" placeholder="Post a public critique or analytical commentary under community safety standard parameters..." rows="3"></textarea>
-                        <button id="submitCommentBtn" class="btn btn-primary btn-sm">Publish Post Comment</button>
-                    </div>
-
-                    <div class="rendered-comments-timeline" id="commentsDisplayTimeline">
-                        <!-- Dynamically aggregated LocalStorage comments arrays -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recommendation & Related Systems Content Shelves -->
-            <div class="content-shelf mt-4">
-                <div class="shelf-header"><h2 class="shelf-title">Narrative Affiliated Collections</h2></div>
-                <div class="anime-cards-grid" id="relatedAnimeGrid"></div>
-            </div>
-            <div class="content-shelf">
-                <div class="shelf-header"><h2 class="shelf-title">Recommended System Selections</h2></div>
-                <div class="anime-cards-grid" id="recommendedAnimeGrid"></div>
-            </div>
-        </section>
-
-        <!-- ================= VIDEO PLAYER VIEW ================= -->
-        <section id="playerView" class="view-panel hidden">
-            <div class="player-view-wrapper">
-                <button class="back-nav-btn" id="backToDetailsFromPlayer"><i class="fa-solid fa-arrow-left"></i> Back to Resource Overview</button>
-                
-                <h2 id="playerHeadingTitle" class="player-meta-title">Streaming: Series Track Node</h2>
-                
-                <!-- Main Core HTML5 Video Streaming Component with Customized Functional Overlay Wrappers -->
-                <div class="video-theatre-box" id="theatreBoxContainer">
-                    <video id="mainMediaStreamComponent" src="" preload="auto" playsinline></video>
-                    
-                    <!-- Customized Dynamic Overlay Layer Interface Matrix -->
-                    <div class="player-custom-controls-overlay" id="customControlsOverlay">
-                        <!-- Overlay Top Utility Elements Bar -->
-                        <div class="overlay-top-utilities-row">
-                            <span id="videoRuntimeStreamTitle" class="stream-running-title">Streaming Monitor</span>
-                            <button class="utility-icon-btn" id="theatreToggleBtn" title="Toggle Theatre Aspect Layout Mode"><i class="fa-solid fa-expand-arrows-alt"></i></button>
-                        </div>
-
-                        <!-- Centered Play/Pause Prompt Notification Element -->
-                        <div class="overlay-center-prompt" id="centerActionPrompt">
-                            <i class="fa-solid fa-play center-play-icon"></i>
-                        </div>
-
-                        <!-- Specialized Smart Function Skip Indicator Blocks -->
-                        <button id="skipIntroActionBtn" class="skip-intro-action-badge hidden"><i class="fa-solid fa-forward-step"></i> Skip Intro segment [30s]</button>
-
-                        <!-- Control Interface Bottom Controls Consolidation Bar -->
-                        <div class="overlay-bottom-controls-bar">
-                            <!-- Track Progress Seek Slider Component -->
-                            <div class="timeline-slider-container" id="timelineSliderContainer">
-                                <div class="timeline-bar-bg">
-                                    <div class="timeline-buffered-fill" id="timelineBufferedFill"></div>
-                                    <div class="timeline-active-progress" id="timelineActiveProgress"></div>
-                                </div>
-                                <input type="range" id="timelineSeekSlider" min="0" max="100" value="0" step="0.1" class="hidden-native-slider">
-                            </div>
-
-                            <div class="controls-buttons-flex-row">
-                                <div class="controls-left-group">
-                                    <button class="control-action-btn" id="prevEpisodeBtn" title="Previous Content Node Segment"><i class="fa-solid fa-backward"></i></button>
-                                    <button class="control-action-btn" id="playPauseActionBtn" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
-                                    <button class="control-action-btn" id="nextEpisodeBtn" title="Next Content Node Segment"><i class="fa-solid fa-forward"></i></button>
-                                    
-                                    <div class="volume-interaction-module">
-                                        <button class="control-action-btn" id="muteToggleBtn" title="Toggle Volume State"><i class="fa-solid fa-volume-high"></i></button>
-                                        <input type="range" id="volumeSliderControl" min="0" max="1" step="0.05" value="0.8" class="volume-slider">
-                                    </div>
-
-                                    <div class="timestamp-display-readout">
-                                        <span id="currentPlaybackTime">00:00</span> / <span id="totalDurationTime">00:00</span>
-                                    </div>
-                                </div>
-
-                                <div class="controls-right-group">
-                                    <button class="control-action-btn" id="fullscreenToggleBtn" title="Toggle Fullscreen Screen Orientation View"><i class="fa-solid fa-expand"></i></button>
+        <section id="details-view" class="view hidden">
+            <div class="details-banner-wrap">
+                <div id="details-banner" class="details-banner"></div>
+                <div class="details-header container">
+                    <img id="details-cover" src="" alt="Anime Cover" class="details-cover" loading="lazy">
+                    <div class="details-meta">
+                        <h1 id="details-title">Anime Title</h1>
+                        <p id="details-studio" class="studio-tag">Studio Name</p>
+                        <div class="rating-display">
+                            <span id="details-rating-value"><i class="fa-solid fa-star text-accent"></i> 8.5</span>
+                            <div class="user-rating-action">
+                                <span>Rate:</span>
+                                <div class="stars-input" id="user-stars">
+                                    <i class="fa-star fa-regular" data-value="1"></i>
+                                    <i class="fa-star fa-regular" data-value="2"></i>
+                                    <i class="fa-star fa-regular" data-value="3"></i>
+                                    <i class="fa-star fa-regular" data-value="4"></i>
+                                    <i class="fa-star fa-regular" data-value="5"></i>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Explicitly Styled Fallback / Initializer Streaming Placeholder UI Block -->
-                    <div id="videoStreamFallbackUi" class="stream-fallback-ui">
-                        <div class="fallback-message-center">
-                            <i class="fa-solid fa-circle-nodes network-streaming-icon"></i>
-                            <h3>Authorized Educational Stream Feed</h3>
-                            <p>Loading isolated legal asset sample container stream pipeline. Verified fully open-source distribution protocols.</p>
-                            <button id="fallbackInitializeBtn" class="btn btn-primary btn-sm mt-2"><i class="fa-solid fa-circle-play"></i> Launch Active Feed Decode</button>
+                        <p id="details-desc" class="details-desc">Description text goes here...</p>
+                        <div id="details-genres" class="genre-tags"></div>
+                        <div class="details-actions">
+                            <button id="details-start-watch" class="btn active-btn"><i class="fa-solid fa-play"></i> Start Watching</button>
+                            <button id="details-fav-btn" class="btn secondary-btn"><i class="fa-solid fa-heart"></i> Add Favorite</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Auxiliary Segment Selection Index Tab Panel Layout -->
-                <div class="player-episodes-navigation-panel">
-                    <h3 class="panel-section-header">Fast Navigation Segment Indexed Channels</h3>
-                    <div class="player-episodes-flexbox" id="playerEpisodesListContainer">
-                        <!-- Dynamic node connections generated via script -->
-                    </div>
+            <div class="container separation-block">
+                <h2>Episodes</h2>
+                <div id="episode-list" class="episode-list-grid"></div>
+            </div>
+
+            <div class="container separation-block">
+                <h2>Community Comments</h2>
+                <div class="comment-system">
+                    <form id="comment-form">
+                        <textarea id="comment-input" placeholder="Join the discussion dynamically..." required></textarea>
+                        <button type="submit" class="btn active-btn">Post Comment</button>
+                    </form>
+                    <div id="comments-container" class="comments-list"></div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= USER PROFILE VIEW ================= -->
-        <section id="profileView" class="view-panel hidden">
-            <div class="profile-dashboard-layout">
-                <div class="profile-sidebar-card">
-                    <div class="profile-avatar-block">
-                        <img id="profileCardAvatarImg" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Avatar User">
-                        <h2 id="profileCardUsernameText">Username Placeholder</h2>
-                        <span class="user-status-badge">Official Member Tier</span>
+        <section id="player-view" class="view hidden">
+            <div class="container player-layout">
+                <div class="player-main-col">
+                    <div class="video-wrapper">
+                        <video id="main-video" controls crossorigin="anonymous">
+                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <button id="skip-intro-btn" class="skip-btn hidden">Skip Intro</button>
                     </div>
-                    <hr class="card-horizontal-rule">
-                    <div class="profile-account-metrics">
-                        <div class="metric-item-node">
-                            <span class="metric-count-num" id="profileWatchlistCount">0</span>
-                            <span class="metric-label-desc">Saved Watchlist Items</span>
-                        </div>
-                        <div class="metric-item-node">
-                            <span class="metric-count-num" id="profileFavoritesCount">0</span>
-                            <span class="metric-label-desc">Favorited Titles</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-activity-details-panel">
-                    <h2 class="panel-main-heading">User Identity Profile Control Console</h2>
                     
-                    <div class="activity-section-block">
-                        <h3 class="activity-block-header"><i class="fa-solid fa-bookmark text-accent"></i> Active Saved Watchlist Queue</h3>
-                        <div class="anime-cards-grid" id="profileWatchlistGrid"></div>
+                    <div class="player-controls-meta">
+                        <h2 id="player-anime-title">Anime Title Here</h2>
+                        <h4 id="player-episode-title">Episode X</h4>
+                        <div class="player-nav-buttons">
+                            <button id="prev-ep-btn" class="btn secondary-btn"><i class="fa-solid fa-backward"></i> Prev</button>
+                            <button id="next-ep-btn" class="btn secondary-btn">Next <i class="fa-solid fa-forward"></i></button>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="activity-section-block">
-                        <h3 class="activity-block-header"><i class="fa-solid fa-heart text-accent"></i> Selected Favorite Series Matrix</h3>
-                        <div class="anime-cards-grid" id="profileFavoritesGrid"></div>
-                    </div>
+                <div class="player-side-col">
+                    <h3>Episodes</h3>
+                    <div id="player-episodes-sidebar" class="sidebar-episodes"></div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= STANDALONE ISOLATED SYSTEM VIEWS ================= -->
-        <section id="watchlistView" class="view-panel hidden">
-            <h2 class="section-title-accent"><i class="fa-solid fa-bookmark"></i> User Monitored Content Watchlist</h2>
-            <div class="anime-cards-grid" id="standaloneWatchlistGrid"></div>
-        </section>
-
-        <section id="historyView" class="view-panel hidden">
-            <div class="shelf-header">
-                <h2 class="section-title-accent"><i class="fa-solid fa-history"></i> Chronological Watch Playback History</h2>
-                <button id="clearHistoryBtn" class="btn btn-secondary btn-xs"><i class="fa-solid fa-trash"></i> Wipe All Logs</button>
+        <section id="watchlist-view" class="view hidden">
+            <div class="container">
+                <h2>Your Custom Dashboard</h2>
+                <div class="dashboard-tabs">
+                    <button class="dash-tab active" data-target="dash-watchlist">Watchlist</button>
+                    <button class="dash-tab" data-target="dash-history">Continue Watching</button>
+                </div>
+                <div id="dash-watchlist" class="anime-grid dash-panel"></div>
+                <div id="dash-history" class="anime-grid dash-panel hidden"></div>
             </div>
-            <div class="anime-cards-grid" id="standaloneHistoryGrid"></div>
         </section>
 
     </main>
 
-    <!-- ================= SYSTEM ACCOUNT AUTHORIZATION MODAL WINDOW ================= -->
-    <div id="authModalWindowOverlay" class="modal-window-overlay hidden">
-        <div class="modal-card-wrapper glass-element">
-            <div class="modal-header-row">
-                <h2 id="authModalTitleHeader">Sign In Access Node</h2>
-                <button id="closeAuthModalBtn" class="modal-close-icon-btn"><i class="fa-solid fa-times"></i></button>
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content glass">
+            <span class="close-modal">&times;</span>
+            <div class="auth-box">
+                <h2 id="modal-title">Sign In</h2>
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label for="auth-user">Username</label>
+                        <input type="text" id="auth-user" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-pass">Password</label>
+                        <input type="password" id="auth-pass" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" id="auth-submit-btn" class="btn active-btn w-100">Login</button>
+                </form>
+                <p class="auth-toggle-msg">Don't have an account? <a href="#" id="toggle-auth-mode">Sign Up Here</a></p>
             </div>
-            
-            <!-- Tab Switchers Toggle Area -->
-            <div class="modal-tabs-navigation">
-                <button id="tabToggleLoginMode" class="modal-tab-toggle active">Account Log In</button>
-                <button id="tabToggleSignupMode" class="modal-tab-toggle">Register Membership</button>
-            </div>
-
-            <!-- Login Execution Input Form Area -->
-            <form id="loginFormSubsystem" class="modal-form-module">
-                <div class="form-input-wrapper">
-                    <label for="loginUsernameInput">Account Identity String (Username)</label>
-                    <div class="input-icon-group">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" id="loginUsernameInput" required placeholder="Enter username registration identifier...">
-                    </div>
-                </div>
-                <div class="form-input-wrapper">
-                    <label for="loginPasswordInput">Protected System Passphrase</label>
-                    <div class="input-icon-group">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="loginPasswordInput" required placeholder="••••••••">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block mt-2">Authorize Operational Session Access</button>
-            </form>
-
-            <!-- Signup Execution Input Form Area -->
-            <form id="signupFormSubsystem" class="modal-form-module hidden">
-                <div class="form-input-wrapper">
-                    <label for="signupUsernameInput">Desired Account Handle String</label>
-                    <div class="input-icon-group">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <input type="text" id="signupUsernameInput" required placeholder="Choose alphanumeric designation...">
-                    </div>
-                </div>
-                <div class="form-input-wrapper">
-                    <label for="signupPasswordInput">Select Secure Key Phrase</label>
-                    <div class="input-icon-group">
-                        <i class="fa-solid fa-key"></i>
-                        <input type="password" id="signupPasswordInput" required placeholder="Create protective passcode sequence...">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-accent btn-block mt-2">Instantiate User Account Configuration</button>
-            </form>
         </div>
     </div>
-
-    <!-- ================= FOOTER CONTENT BAR ================= -->
-    <footer class="global-footer">
-        <p>&copy; 2026 StreamAnime Media Node Systems. All distribution layers run strict API parameters mapping only fully legal educational open-source material streams.</p>
-    </footer>
 
     <script src="script.js"></script>
 </body>
