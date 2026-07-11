@@ -3,7 +3,7 @@
  * Powered by Jikan REST API (MyAnimeList open-source integration)
  */
 
-const API_BASE = 'https://anime-streaming.p.rapidapi.com';
+const API_BASE = 'https://api.jikan.moe/v4';
 
 // Application State Layer
 const AppState = {
