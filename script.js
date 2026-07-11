@@ -1,598 +1,522 @@
 /**
- * AniStream Core Application Engine
- * Optimized Architecture using Native JavaScript APIs & amvstrm Data Mapping
+ * AniStream Core Native Engineering Script
+ * Single Page Application Processing Thread Architecture
  */
 
-// Base endpoint configuration matching standard production specification APIs
-const API_BASE_URL = 'https://api.amvstrm.me/api/v2';
-
-// Dynamic Memory Store Engine (Single Source of Truth)
-const state = {
-    currentUser: JSON.parse(localStorage.getItem('ani_user')) || null,
-    currentView: 'home',
-    activeAnimeData: null,
-    activeEpisodeIndex: 0,
-    watchlist: JSON.parse(localStorage.getItem('ani_watchlist')) || [],
-    favorites: JSON.parse(localStorage.getItem('ani_favorites')) || [],
-    history: JSON.parse(localStorage.getItem('ani_history')) || [],
-    authMode: 'login' // login || signup
+const CONFIG = {
+    API_URL: 'https://api.amvstrm.me/api/v2',
+    SampleStream: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
 };
 
-// Global DOM Selectors Context Registry
+const appState = {
+    user: JSON.parse(localStorage.getItem('as_user')) || null,
+    view: 'home',
+    activeMedia: null,
+    activeEpIndex: 0,
+    watchlist: JSON.parse(localStorage.getItem('as_watchlist')) || [],
+    history: JSON.parse(localStorage.getItem('as_history')) || [],
+    authMode: 'login'
+};
+
 const DOM = {
-    views: document.querySelectorAll('.view'),
-    trendingGrid: document.getElementById('trending-grid'),
-    latestGrid: document.getElementById('latest-grid'),
-    popularGrid: document.getElementById('popular-grid'),
+    views: document.querySelectorAll('.app-view'),
+    gridTrending: document.getElementById('grid-trending'),
+    gridRecent: document.getElementById('grid-recent'),
+    gridPopular: document.getElementById('grid-popular'),
     searchInput: document.getElementById('search-input'),
     searchBtn: document.getElementById('search-btn'),
-    autocompleteResults: document.getElementById('autocomplete-results'),
-    heroBanner: document.getElementById('hero-banner'),
+    autocomplete: document.getElementById('autocomplete-dropdown'),
+    heroDisplay: document.getElementById('hero-display'),
     heroTitle: document.getElementById('hero-title'),
-    heroDesc: document.getElementById('hero-desc'),
-    heroPlayBtn: document.getElementById('hero-play-btn'),
-    heroDetailsBtn: document.getElementById('hero-details-btn'),
+    heroSynopsis: document.getElementById('hero-synopsis'),
+    heroPlay: document.getElementById('hero-btn-play'),
+    heroInfo: document.getElementById('hero-btn-info'),
     logo: document.getElementById('nav-logo'),
+    watchlistToggle: document.getElementById('nav-watchlist-btn'),
+    authWrapper: document.getElementById('auth-ui-wrapper'),
     
-    // View Blocks
-    homeView: document.getElementById('home-view'),
-    detailsView: document.getElementById('details-view'),
-    playerView: document.getElementById('player-view'),
-    watchlistView: document.getElementById('watchlist-view'),
-    
-    // Details Specific Selectors
-    detailsBanner: document.getElementById('details-banner'),
-    detailsCover: document.getElementById('details-cover'),
-    detailsTitle: document.getElementById('details-title'),
-    detailsStudio: document.getElementById('details-studio'),
-    detailsRating: document.getElementById('details-rating-value'),
-    detailsDesc: document.getElementById('details-desc'),
-    detailsGenres: document.getElementById('details-genres'),
-    episodeList: document.getElementById('episode-list'),
-    detailsStartWatch: document.getElementById('details-start-watch'),
-    detailsFavBtn: document.getElementById('details-fav-btn'),
-    userStars: document.getElementById('user-stars'),
-    commentForm: document.getElementById('comment-form'),
-    commentInput: document.getElementById('comment-input'),
-    commentsContainer: document.getElementById('comments-container'),
+    // Media View Fields
+    detailsBackdrop: document.getElementById('details-backdrop-bg'),
+    detailsPoster: document.getElementById('details-poster-img'),
+    detailsTitle: document.getElementById('details-meta-title'),
+    detailsStudio: document.getElementById('details-meta-studio'),
+    detailsScore: document.getElementById('details-average-score'),
+    detailsSynopsis: document.getElementById('details-synopsis-text'),
+    detailsBadges: document.getElementById('details-genres-badges'),
+    gridEpisodes: document.getElementById('grid-episodes-index'),
+    btnPlayFirst: document.getElementById('btn-details-play-first'),
+    btnWatchlistToggle: document.getElementById('btn-details-watchlist-toggle'),
+    interactiveStars: document.getElementById('interactive-star-row'),
+    discussionForm: document.getElementById('discussion-input-form'),
+    discussionTextarea: document.getElementById('discussion-textarea'),
+    discussionContainer: document.getElementById('discussion-comments-render-target'),
 
-    // Player Components
-    mainVideo: document.getElementById('main-video'),
-    skipIntroBtn: document.getElementById('skip-intro-btn'),
-    playerAnimeTitle: document.getElementById('player-anime-title'),
-    playerEpTitle: document.getElementById('player-episode-title'),
-    prevEpBtn: document.getElementById('prev-ep-btn'),
-    nextEpBtn: document.getElementById('next-ep-btn'),
-    playerSidebar: document.getElementById('player-episodes-sidebar'),
+    // Cinematic Streaming Parameters
+    videoElement: document.getElementById('native-html5-video'),
+    btnSkipIntro: document.getElementById('btn-overlay-skip-intro'),
+    playerTitleAnime: document.getElementById('player-title-anime'),
+    playerTitleEp: document.getElementById('player-title-episode'),
+    btnPlayerPrev: document.getElementById('btn-player-prev'),
+    btnPlayerNext: document.getElementById('btn-player-next'),
+    sidebarEpStack: document.getElementById('sidebar-episodes-stack'),
 
-    // Authentication Elements
-    authBtn: document.getElementById('auth-btn'),
-    userMenu: document.getElementById('user-menu'),
-    usernameDisplay: document.getElementById('username-display'),
-    logoutBtn: document.getElementById('logout-btn'),
-    authModal: document.getElementById('auth-modal'),
-    closeModal: document.querySelector('.close-modal'),
-    authForm: document.getElementById('auth-form'),
-    modalTitle: document.getElementById('modal-title'),
-    authSubmitBtn: document.getElementById('auth-submit-btn'),
-    toggleAuthMode: document.getElementById('toggle-auth-mode'),
-    watchlistToggleBtn: document.getElementById('watchlist-toggle-btn'),
-    
-    // Filtering Elements
+    // Authentication Engine System
+    authOverlay: document.getElementById('modal-auth-overlay'),
+    authForm: document.getElementById('modal-native-form'),
+    authHeading: document.getElementById('auth-modal-heading-text'),
+    authSubmitBtn: document.getElementById('form-submit-action-btn'),
+    authModeToggle: document.getElementById('link-auth-mode-toggle'),
+    authClose: document.querySelector('.auth-modal-close-trigger'),
+
+    // Dashboard Hub Elements
+    tabTriggers: document.querySelectorAll('.tab-trigger'),
+    panelWatchlist: document.getElementById('panel-watchlist'),
+    panelHistory: document.getElementById('panel-history'),
+
+    // Filter Processing Parameters
     filterGenre: document.getElementById('filter-genre'),
     filterYear: document.getElementById('filter-year'),
     filterSeason: document.getElementById('filter-season'),
-    filterStatus: document.getElementById('filter-status'),
-    applyFiltersBtn: document.getElementById('apply-filters-btn'),
-    
-    // Dashboard Components
-    dashTabs: document.querySelectorAll('.dash-tab'),
-    dashPanels: document.querySelectorAll('.dash-panel')
+    btnExecuteFilters: document.getElementById('btn-execute-filters')
 };
 
 /* ==========================================
- * INITIALIZATION & ENGINE EVENTS ROUTER
+ * SUBSYSTEM ENGINE INITIALIZATION ROUTER
  * ========================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    setupEventListeners();
+    initAppCore();
+    registerEventHandlers();
 });
 
-function initApp() {
-    updateAuthUI();
-    fetchShelfData('/trending', DOM.trendingGrid);
-    fetchShelfData('/recent', DOM.latestGrid);
-    fetchShelfData('/popular', DOM.popularGrid);
-    setupHeroBanner();
+function initAppCore() {
+    synchronizeUserInterface();
+    renderContentShelf('/trending', DOM.gridTrending);
+    renderContentShelf('/recent', DOM.gridRecent);
+    renderContentShelf('/popular', DOM.gridPopular);
+    loadShowcaseBanner();
 }
 
-function setupEventListeners() {
-    // Structural Navigation Engine Bindings
-    DOM.logo.addEventListener('click', (e) => { e.preventDefault(); switchView('home'); });
-    DOM.watchlistToggleBtn.addEventListener('click', () => { renderDashboard(); switchView('watchlist'); });
+function registerEventHandlers() {
+    DOM.logo.addEventListener('click', (e) => { e.preventDefault(); navigateTo('home'); });
+    DOM.watchlistToggle.addEventListener('click', () => { populateWorkspaceDashboard(); navigateTo('watchlist'); });
     
-    // Dynamic Application Context Search Engine Routing
-    DOM.searchInput.addEventListener('input', debounce(handleSearchAutocomplete, 300));
-    DOM.searchBtn.addEventListener('click', executeSearch);
-    
-    // Filter System Trigger
-    DOM.applyFiltersBtn.addEventListener('click', executeAdvancedDiscovery);
+    DOM.searchInput.addEventListener('input', debounce(processAutocompleteTask, 250));
+    DOM.searchBtn.addEventListener('click', runSearchPipeline);
+    DOM.btnExecuteFilters.addEventListener('click', runAdvancedDiscoveryFilter);
 
-    // Contextual Modals Closures & Forms
-    DOM.authBtn.addEventListener('click', () => openAuthModal('login'));
-    DOM.closeModal.addEventListener('click', () => DOM.authModal.classList.add('hidden'));
-    DOM.toggleAuthMode.addEventListener('click', (e) => {
-        e.preventDefault();
-        openAuthModal(state.authMode === 'login' ? 'signup' : 'login');
+    DOM.authWrapper.addEventListener('click', (e) => {
+        if(e.target.id === 'auth-modal-trigger') triggerAuthModalDisplay('login');
+        if(e.target.id === 'auth-logout-action') executeProfileSignout();
     });
-    DOM.authForm.addEventListener('submit', handleAuthSubmit);
-    DOM.logoutBtn.addEventListener('click', handleLogout);
+    DOM.authClose.addEventListener('click', () => DOM.authOverlay.classList.add('hidden'));
+    DOM.authModeToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerAuthModalDisplay(appState.authMode === 'login' ? 'signup' : 'login');
+    });
+    DOM.authForm.addEventListener('submit', captureProfileAuthorization);
 
-    // Video Playback Interactive Logic Bindings
-    DOM.mainVideo.addEventListener('timeupdate', checkVideoTimeProgress);
-    DOM.skipIntroBtn.addEventListener('click', skipIntroSegment);
-    DOM.prevEpBtn.addEventListener('click', () => playEpisodeAdjacent(-1));
-    DOM.nextEpBtn.addEventListener('click', () => playEpisodeAdjacent(1));
-    
-    // Profile Management System Tab Interactivity
-    DOM.dashTabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            DOM.dashTabs.forEach(t => t.classList.remove('active'));
-            DOM.dashPanels.forEach(p => p.classList.add('hidden'));
+    DOM.videoElement.addEventListener('timeupdate', trackVideoProgressRuntime);
+    DOM.btnSkipIntro.addEventListener('click', () => { DOM.videoElement.currentTime = 30; });
+    DOM.btnPlayerPrev.addEventListener('click', () => shiftPlaybackIndex(-1));
+    DOM.btnPlayerNext.addEventListener('click', () => shiftPlaybackIndex(1));
+
+    DOM.tabTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            DOM.tabTriggers.forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.dashboard-panel-view').forEach(p => p.classList.add('hidden'));
             e.target.classList.add('active');
-            document.getElementById(e.target.dataset.target).classList.remove('hidden');
+            document.getElementById(e.target.dataset.panelTarget).classList.remove('hidden');
         });
     });
 
-    // Social Data Engine Dynamic Interactivity
-    DOM.commentForm.addEventListener('submit', handleCommentSubmission);
-    setupStarRatingSystem();
+    DOM.discussionForm.addEventListener('submit', processCommentSubmission);
+    setupInteractiveRatingEngine();
 }
 
 /* ==========================================
- * CORE SPA VIEW MANAGEMENT PIPELINE
+ * SPA VIEWPORT CONTROL PIPELINE
  * ========================================== */
-function switchView(viewName) {
-    state.currentView = viewName;
-    DOM.views.forEach(view => {
-        if (view.id === `${viewName}-view`) {
-            view.classList.remove('hidden');
+function navigateTo(viewId) {
+    appState.view = viewId;
+    DOM.views.forEach(v => {
+        if (v.id === `view-${viewId}`) {
+            v.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            view.classList.add('hidden');
+            v.classList.add('hidden');
         }
     });
-    // Suspend playback thread loop if leaving active view space context
-    if (viewName !== 'player') {
-        DOM.mainVideo.pause();
-    }
+    if (viewId !== 'player') DOM.videoElement.pause();
 }
 
 /* ==========================================
- * DATA CONSUMPTION / REST API ENGINE (AMVSTRM)
+ * NETWORKING & API INTEGRATION DESYNC ENGINE
  * ========================================== */
-async function fetchShelfData(endpoint, gridContainer) {
+async function renderContentShelf(endpoint, targetGrid) {
     try {
-        gridContainer.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading entries...</div>';
-        const response = await fetch(`${API_BASE_URL}${endpoint}`);
-        const data = await response.json();
-        
-        // Dynamic Normalization Map to parse payload response formats properly
-        const results = data.results || data.data || [];
-        gridContainer.innerHTML = '';
-        
-        if(results.length === 0) {
-            gridContainer.innerHTML = '<p class="no-data">No anime entries match your search request.</p>';
+        targetGrid.innerHTML = '<div class="spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading...</div>';
+        const response = await fetch(`${CONFIG.API_URL}${endpoint}`);
+        const parsed = await response.json();
+        const nodes = parsed.results || parsed.data || [];
+        targetGrid.innerHTML = '';
+
+        if(nodes.length === 0) {
+            targetGrid.innerHTML = '<p class="empty-notice">No catalog records discovered.</p>';
             return;
         }
 
-        results.slice(0, 10).forEach(anime => {
-            const card = createAnimeCard(anime);
-            gridContainer.appendChild(card);
+        nodes.slice(0, 10).forEach(item => {
+            targetGrid.appendChild(generateMediaCardNode(item));
         });
-    } catch (error) {
-        console.error(`Data request pipeline failure for endpoint ${endpoint}:`, error);
-        gridContainer.innerHTML = '<p class="error-msg">Failed to securely query anime streaming records.</p>';
-    }
-}
-
-async function setupHeroBanner() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/trending`);
-        const data = await response.json();
-        const results = data.results || data.data || [];
-        if (results.length > 0) {
-            const featured = results[0];
-            DOM.heroBanner.style.backgroundImage = `url('${featured.bannerImage || featured.coverImage || ''}')`;
-            DOM.heroTitle.textContent = featured.title.english || featured.title.romaji || "Featured Show";
-            DOM.heroDesc.textContent = featured.description || "No localized synopsis text is available.";
-            
-            // Re-bind actions context targets dynamically
-            DOM.heroPlayBtn.onclick = () => loadAnimeDetails(featured.id, true);
-            DOM.heroDetailsBtn.onclick = () => loadAnimeDetails(featured.id, false);
-        }
     } catch (err) {
-        console.error("Hero display setup failure initialization", err);
+        console.error(err);
+        targetGrid.innerHTML = '<p class="error-notice">Network syncing transaction failure.</p>';
     }
 }
 
-function createAnimeCard(anime) {
-    const card = document.createElement('div');
-    card.className = 'anime-card';
-    const titleText = anime.title?.english || anime.title?.romaji || anime.title || "Unknown Anime Title";
-    const imageSource = anime.coverImage || anime.image || '';
-    const scoreText = anime.score || anime.averageScore ? ((anime.score || anime.averageScore) / 10).toFixed(1) : 'N/A';
+async function loadShowcaseBanner() {
+    try {
+        const res = await fetch(`${CONFIG.API_URL}/trending`);
+        const json = await res.json();
+        const collection = json.results || json.data || [];
+        if (collection.length > 0) {
+            const primaryShow = collection[0];
+            DOM.heroDisplay.style.backgroundImage = `url('${primaryShow.bannerImage || primaryShow.coverImage || ''}')`;
+            DOM.heroTitle.textContent = primaryShow.title.english || primaryShow.title.romaji;
+            DOM.heroSynopsis.textContent = primaryShow.description || "Synopsis summary text unavailable.";
+            DOM.heroPlay.onclick = () => pullMediaProfile(primaryShow.id, true);
+            DOM.heroInfo.onclick = () => pullMediaProfile(primaryShow.id, false);
+        }
+    } catch (err) { console.error(err); }
+}
+
+function generateMediaCardNode(data) {
+    const node = document.createElement('div');
+    node.className = 'media-card-node';
+    const title = data.title?.english || data.title?.romaji || data.title || "Catalog Record";
+    const img = data.coverImage || data.image || '';
+    const score = data.score || data.averageScore ? ((data.score || data.averageScore) / 10).toFixed(1) : '7.8';
     
-    card.innerHTML = `
-        <div class="card-img-wrap">
-            <img src="${imageSource}" alt="${titleText}" loading="lazy">
-            <span class="card-score"><i class="fa-solid fa-star"></i> ${scoreText}</span>
+    node.innerHTML = `
+        <div class="node-img-container">
+            <img src="${img}" alt="${title}" loading="lazy">
+            <span class="node-floating-badge"><i class="fa-solid fa-star"></i> ${score}</span>
         </div>
-        <div class="card-info">
-            <h4>${titleText}</h4>
-            <p>${anime.season || 'N/A'} | ${anime.format || 'TV'}</p>
+        <div class="node-metadata-padding">
+            <h4>${title}</h4>
+            <p>${data.season || 'Broadcast'} | ${data.format || 'TV Series'}</p>
         </div>
     `;
-    card.addEventListener('click', () => loadAnimeDetails(anime.id));
-    return card;
+    node.addEventListener('click', () => pullMediaProfile(data.id));
+    return node;
 }
 
 /* ==========================================
- * FILTER & ADVANCED SEARCH OPERATIONS
+ * FILTER & RUNTIME SEARCH MATRIX PROCEDURES
  * ========================================== */
-async function handleSearchAutocomplete() {
-    const query = DOM.searchInput.value.trim();
-    if (query.length < 3) {
-        DOM.autocompleteResults.classList.add('hidden');
+async function processAutocompleteTask() {
+    const rawVal = DOM.searchInput.value.trim();
+    if (rawVal.length < 3) {
+        DOM.autocomplete.classList.add('hidden');
         return;
     }
     try {
-        const res = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
-        const items = data.results || data.data || [];
+        const res = await fetch(`${CONFIG.API_URL}/search?q=${encodeURIComponent(rawVal)}`);
+        const parsed = await res.json();
+        const records = parsed.results || parsed.data || [];
+        DOM.autocomplete.innerHTML = '';
         
-        DOM.autocompleteResults.innerHTML = '';
-        if(items.length > 0) {
-            DOM.autocompleteResults.classList.remove('hidden');
-            items.slice(0, 5).forEach(item => {
-                const node = document.createElement('div');
-                node.className = 'autocomplete-item';
-                node.innerHTML = `
-                    <img src="${item.coverImage || item.image}" alt="">
-                    <span>${item.title.english || item.title.romaji}</span>
+        if (records.length > 0) {
+            DOM.autocomplete.classList.remove('hidden');
+            records.slice(0, 5).forEach(rec => {
+                const row = document.createElement('div');
+                row.className = 'autocomplete-row-item';
+                row.innerHTML = `
+                    <img src="${rec.coverImage || rec.image}" alt="">
+                    <span>${rec.title.english || rec.title.romaji}</span>
                 `;
-                node.addEventListener('click', () => {
-                    DOM.autocompleteResults.classList.add('hidden');
+                row.addEventListener('click', () => {
+                    DOM.autocomplete.classList.add('hidden');
                     DOM.searchInput.value = '';
-                    loadAnimeDetails(item.id);
+                    pullMediaProfile(rec.id);
                 });
-                DOM.autocompleteResults.appendChild(node);
+                DOM.autocomplete.appendChild(row);
             });
         }
-    } catch (e) { console.error(e); }
+    } catch(e) { console.error(e); }
 }
 
-function executeSearch() {
-    const query = DOM.searchInput.value.trim();
-    if(query) {
-        DOM.autocompleteResults.classList.add('hidden');
-        switchView('home');
-        fetchShelfData(`/search?q=${encodeURIComponent(query)}`, DOM.trendingGrid);
-        DOM.latestGrid.parentElement.classList.add('hidden');
-        DOM.popularGrid.parentElement.classList.add('hidden');
+function runSearchPipeline() {
+    const target = DOM.searchInput.value.trim();
+    if (target) {
+        DOM.autocomplete.classList.add('hidden');
+        navigateTo('home');
+        renderContentShelf(`/search?q=${encodeURIComponent(target)}`, DOM.gridTrending);
+        DOM.gridRecent.parentElement.classList.add('hidden');
+        DOM.gridPopular.parentElement.classList.add('hidden');
     }
 }
 
-function executeAdvancedDiscovery() {
-    const genre = DOM.filterGenre.value;
-    const year = DOM.filterYear.value;
-    const season = DOM.filterSeason.value;
-    const status = DOM.filterStatus.value;
+function runAdvancedDiscoveryFilter() {
+    let queries = [];
+    if(DOM.filterGenre.value) queries.push(`genre=${DOM.filterGenre.value}`);
+    if(DOM.filterYear.value) queries.push(`year=${DOM.filterYear.value}`);
+    if(DOM.filterSeason.value) queries.push(`season=${DOM.filterSeason.value}`);
     
-    let queryParams = [];
-    if (genre) queryParams.push(`genre=${genre}`);
-    if (year) queryParams.push(`year=${year}`);
-    if (season) queryParams.push(`season=${season}`);
-    if (status) queryParams.push(`status=${status}`);
-    
-    const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-    switchView('home');
-    fetchShelfData(`/advanced${queryString}`, DOM.trendingGrid);
+    const queryStr = queries.length > 0 ? `?${queries.join('&')}` : '';
+    navigateTo('home');
+    renderContentShelf(`/advanced${queryStr}`, DOM.gridTrending);
 }
 
 /* ==========================================
- * DETAIL VIEW PIPELINE DATA ORCHESTRATION
+ * PROFILE METADATA RENDER ENGINE INFRASTRUCTURE
  * ========================================== */
-async function loadAnimeDetails(animeId, instantPlayback = false) {
+async function pullMediaProfile(id, autoPlayFlag = false) {
     try {
-        switchView('home'); // Structural UX Reset
-        const res = await fetch(`${API_BASE_URL}/info/${animeId}`);
-        const parsed = await res.json();
-        const anime = parsed.data || parsed;
+        navigateTo('home');
+        const res = await fetch(`${CONFIG.API_URL}/info/${id}`);
+        const block = await res.json();
+        const payload = block.data || block;
         
-        state.activeAnimeData = anime;
-        
-        if (instantPlayback) {
-            initiateVideoPlayback(0);
+        appState.activeMedia = payload;
+        if(autoPlayFlag) {
+            executeCinemaPipeline(0);
             return;
         }
 
-        // DOM Mapping UI Construction
-        DOM.detailsBanner.style.backgroundImage = `url('${anime.bannerImage || anime.coverImage || ''}')`;
-        DOM.detailsCover.src = anime.coverImage || anime.image || '';
-        DOM.detailsTitle.textContent = anime.title.english || anime.title.romaji;
-        DOM.detailsStudio.textContent = `Studio: ${anime.studios?.join(', ') || 'Unknown Production'}`;
-        DOM.detailsRating.innerHTML = `<i class="fa-solid fa-star text-accent"></i> ${anime.score ? (anime.score/10).toFixed(1) : '8.0'}`;
-        DOM.detailsDesc.textContent = anime.description || 'No summary textual asset has been cataloged.';
+        DOM.detailsBackdrop.style.backgroundImage = `url('${payload.bannerImage || payload.coverImage || ''}')`;
+        DOM.detailsPoster.src = payload.coverImage || payload.image || '';
+        DOM.detailsTitle.textContent = payload.title.english || payload.title.romaji;
+        DOM.detailsStudio.textContent = `Studio Production: ${payload.studios?.join(', ') || 'Independent Core'}`;
+        DOM.detailsScore.innerHTML = `<i class="fa-solid fa-star text-accent"></i> ${payload.score ? (payload.score/10).toFixed(1) : '7.5'}`;
+        DOM.detailsSynopsis.textContent = payload.description || 'No digital manifest logs exist for this record.';
         
-        DOM.detailsGenres.innerHTML = '';
-        if(anime.genres) {
-            anime.genres.forEach(g => {
-                const badge = document.createElement('span');
-                badge.textContent = g;
-                DOM.detailsGenres.appendChild(badge);
+        DOM.detailsBadges.innerHTML = '';
+        if(payload.genres) {
+            payload.genres.forEach(g => {
+                const b = document.createElement('span');
+                b.textContent = g;
+                DOM.detailsBadges.appendChild(b);
             });
         }
 
-        // Render Episodes Layout System
-        DOM.episodeList.innerHTML = '';
-        const epCount = anime.episodes || anime.totalEpisodes || 12;
-        for(let i = 1; i <= epCount; i++) {
-            const epBtn = document.createElement('button');
-            epBtn.className = 'ep-btn';
-            epBtn.textContent = `Ep ${i}`;
-            epBtn.addEventListener('click', () => initiateVideoPlayback(i - 1));
-            DOM.episodeList.appendChild(epBtn);
+        DOM.gridEpisodes.innerHTML = '';
+        const limit = payload.episodes || payload.totalEpisodes || 12;
+        for (let i = 1; i <= limit; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'matrix-ep-trigger';
+            btn.textContent = `Episode ${i}`;
+            btn.addEventListener('click', () => executeCinemaPipeline(i - 1));
+            DOM.gridEpisodes.appendChild(btn);
         }
 
-        // Setup Buttons Data Bindings
-        DOM.detailsStartWatch.onclick = () => initiateVideoPlayback(0);
-        setupWatchlistButtons(animeId);
-        renderComments(animeId);
-        loadUserStarInterface(animeId);
-
-        switchView('details');
-    } catch (err) {
-        console.error("Critical rendering error localized inside Info Pipeline", err);
-    }
+        DOM.btnPlayFirst.onclick = () => executeCinemaPipeline(0);
+        refreshWatchlistBtnState(id);
+        hydrateDiscussionComments(id);
+        syncInteractiveStarRating(id);
+        navigateTo('details');
+    } catch(err) { console.error(err); }
 }
 
 /* ==========================================
- * VIDEO PLAYER CORE EXECUTION MECHANICS
+ * CINEMATIC THEATER VIEW STREAM CONTROLLER
  * ========================================== */
-function initiateVideoPlayback(episodeIndex) {
-    if (!state.activeAnimeData) return;
-    state.activeEpisodeIndex = episodeIndex;
+function executeCinemaPipeline(index) {
+    if(!appState.activeMedia) return;
+    appState.activeEpIndex = index;
+    const media = appState.activeMedia;
     
-    const anime = state.activeAnimeData;
-    DOM.playerAnimeTitle.textContent = anime.title.english || anime.title.romaji;
-    DOM.playerEpTitle.textContent = `Episode ${episodeIndex + 1}`;
+    DOM.playerTitleAnime.textContent = media.title.english || media.title.romaji;
+    DOM.playerTitleEp.textContent = `Broadcast Episode ${index + 1}`;
     
-    // Check Local Storage for saved "Continue Watching" tracking timestamp state pointer
-    const storageKey = `resume_${anime.id}_${episodeIndex}`;
-    const savedTime = localStorage.getItem(storageKey);
+    const trackingKey = `stream_resume_${media.id}_${index}`;
+    const stamp = localStorage.getItem(trackingKey);
     
-    switchView('player');
+    navigateTo('player');
+    DOM.videoElement.load();
     
-    // Load native stream configurations cleanly
-    DOM.mainVideo.load();
-    if(savedTime) {
-        DOM.mainVideo.currentTime = parseFloat(savedTime);
-    }
+    if(stamp) DOM.videoElement.currentTime = parseFloat(stamp);
+    DOM.videoElement.play().catch(() => console.log('Playback lifecycle suspended. Wait user event pointer.'));
     
-    // Execute async context native promise play logic natively safely
-    DOM.mainVideo.play().catch(e => console.log("Auto playback initialization deferral rule caught. Waiting user activation."));
-    
-    buildPlayerSidebar(anime);
-    saveToHistory(anime.id, episodeIndex);
+    generatePlaylistSidebar(media);
+    writeHistoryLog(media.id, index);
 }
 
-function buildPlayerSidebar(anime) {
-    DOM.playerSidebar.innerHTML = '';
-    const epCount = anime.episodes || anime.totalEpisodes || 12;
-    for (let i = 0; i < epCount; i++) {
-        const item = document.createElement('div');
-        item.className = `sidebar-ep-item ${i === state.activeEpisodeIndex ? 'active' : ''}`;
-        item.textContent = `Episode ${i + 1}`;
-        item.addEventListener('click', () => initiateVideoPlayback(i));
-        DOM.playerSidebar.appendChild(item);
+function generatePlaylistSidebar(media) {
+    DOM.sidebarEpStack.innerHTML = '';
+    const cap = media.episodes || media.totalEpisodes || 12;
+    for(let i = 0; i < cap; i++) {
+        const row = document.createElement('div');
+        row.className = `playlist-stack-row ${i === appState.activeEpIndex ? 'active' : ''}`;
+        row.textContent = `Episode ${i + 1} Broadcast`;
+        row.addEventListener('click', () => executeCinemaPipeline(i));
+        DOM.sidebarEpStack.appendChild(row);
     }
 }
 
-function checkVideoTimeProgress() {
-    const video = DOM.mainVideo;
-    // Show Intro skipping logic overlay array metrics natively (Simulated 10s -> 30s parameters)
-    if(video.currentTime >= 10 && video.currentTime <= 30) {
-        DOM.skipIntroBtn.classList.remove('hidden');
+function trackVideoProgressRuntime() {
+    const video = DOM.videoElement;
+    if(video.currentTime >= 12 && video.currentTime <= 28) {
+        DOM.btnSkipIntro.classList.remove('hidden');
     } else {
-        DOM.skipIntroBtn.classList.add('hidden');
+        DOM.btnSkipIntro.classList.add('hidden');
     }
-    
-    // Auto sync state interval values with Local Storage Engine runtime contexts
-    if (state.activeAnimeData && video.currentTime > 0) {
-        const key = `resume_${state.activeAnimeData.id}_${state.activeEpisodeIndex}`;
-        localStorage.setItem(key, video.currentTime);
+    if(appState.activeMedia && video.currentTime > 0) {
+        localStorage.setItem(`stream_resume_${appState.activeMedia.id}_${appState.activeEpIndex}`, video.currentTime);
     }
 }
 
-function skipIntroSegment() {
-    DOM.mainVideo.currentTime = 30;
-    DOM.skipIntroBtn.classList.add('hidden');
-}
-
-function playEpisodeAdjacent(direction) {
-    const newIdx = state.activeEpisodeIndex + direction;
-    const epCount = state.activeAnimeData.episodes || state.activeAnimeData.totalEpisodes || 12;
-    if (newIdx >= 0 && newIdx < epCount) {
-        initiateVideoPlayback(newIdx);
-    }
+function shiftPlaybackIndex(offset) {
+    const targetIdx = appState.activeEpIndex + offset;
+    const max = appState.activeMedia.episodes || appState.activeMedia.totalEpisodes || 12;
+    if (targetIdx >= 0 && targetIdx < max) executeCinemaPipeline(targetIdx);
 }
 
 /* ==========================================
- * STORAGE MATRIX SYSTEM & SOCIAL DATA STORAGE
+ * LOCAL STORAGE STORAGE PERSISTENCE SYSTEMS
  * ========================================== */
-function setupWatchlistButtons(animeId) {
-    const inWatchlist = state.watchlist.includes(animeId);
-    DOM.detailsFavBtn.textContent = inWatchlist ? 'Remove Watchlist' : 'Add Watchlist';
-    DOM.detailsFavBtn.onclick = () => {
-        if(state.watchlist.includes(animeId)) {
-            state.watchlist = state.watchlist.filter(id => id !== animeId);
+function refreshWatchlistBtnState(id) {
+    const exists = appState.watchlist.includes(id);
+    DOM.btnWatchlistToggle.textContent = exists ? 'Drop Watchlist' : 'Add to Watchlist';
+    DOM.btnWatchlistToggle.onclick = () => {
+        if(appState.watchlist.includes(id)) {
+            appState.watchlist = appState.watchlist.filter(i => i !== id);
         } else {
-            state.watchlist.push(animeId);
+            appState.watchlist.push(id);
         }
-        localStorage.setItem('ani_watchlist', JSON.stringify(state.watchlist));
-        setupWatchlistButtons(animeId);
+        localStorage.setItem('as_watchlist', JSON.stringify(appState.watchlist));
+        refreshWatchlistBtnState(id);
     };
 }
 
-function saveToHistory(animeId, episodeIndex) {
-    const historyItem = { animeId, episodeIndex, timestamp: Date.now(), title: state.activeAnimeData.title.english || state.activeAnimeData.title.romaji, image: state.activeAnimeData.coverImage || state.activeAnimeData.image };
-    state.history = state.history.filter(h => h.animeId !== animeId);
-    state.history.unshift(historyItem);
-    localStorage.setItem('ani_history', JSON.stringify(state.history));
+function writeHistoryLog(animeId, index) {
+    const record = { animeId, index, date: Date.now(), title: appState.activeMedia.title.english || appState.activeMedia.title.romaji, img: appState.activeMedia.coverImage || appState.activeMedia.image };
+    appState.history = appState.history.filter(h => h.animeId !== animeId);
+    appState.history.unshift(record);
+    localStorage.setItem('as_history', JSON.stringify(appState.history));
 }
 
-function renderDashboard() {
-    const wlGrid = document.getElementById('dash-watchlist');
-    const histGrid = document.getElementById('dash-history');
-    
-    wlGrid.innerHTML = '';
-    histGrid.innerHTML = '';
+function populateWorkspaceDashboard() {
+    DOM.panelWatchlist.innerHTML = '';
+    DOM.panelHistory.innerHTML = '';
 
-    if(state.watchlist.length === 0) wlGrid.innerHTML = '<p class="p-3">Your Watchlist database index space layout is empty.</p>';
-    if(state.history.length === 0) histGrid.innerHTML = '<p class="p-3">No viewing logs exist yet.</p>';
+    if(appState.watchlist.length === 0) DOM.panelWatchlist.innerHTML = '<p class="notice">Tracked library is vacant.</p>';
+    if(appState.history.length === 0) DOM.panelHistory.innerHTML = '<p class="notice">No history telemetry files registered.</p>';
 
-    // Rehydrate watchlist dynamically from API pointers safely loop iteration
-    state.watchlist.forEach(async (id) => {
-        const res = await fetch(`${API_BASE_URL}/info/${id}`);
-        const d = await res.json();
-        const card = createAnimeCard(d.data || d);
-        wlGrid.appendChild(card);
+    appState.watchlist.forEach(async (id) => {
+        const response = await fetch(`${CONFIG.API_URL}/info/${id}`);
+        const parsed = await response.json();
+        DOM.panelWatchlist.appendChild(generateMediaCardNode(parsed.data || parsed));
     });
 
-    state.history.forEach(item => {
+    appState.history.forEach(h => {
         const node = document.createElement('div');
-        node.className = 'anime-card';
+        node.className = 'media-card-node';
         node.innerHTML = `
-            <div class="card-img-wrap">
-                <img src="${item.image}" alt="">
+            <div class="node-img-container">
+                <img src="${h.img}" alt="">
             </div>
-            <div class="card-info">
-                <h4>${item.title}</h4>
-                <p>Resuming Ep ${item.episodeIndex + 1}</p>
+            <div class="node-metadata-padding">
+                <h4>${h.title}</h4>
+                <p>Resume: Episode ${h.index + 1}</p>
             </div>
         `;
-        node.addEventListener('click', () => loadAnimeDetails(item.animeId, true));
-        histGrid.appendChild(node);
+        node.addEventListener('click', () => pullMediaProfile(h.animeId, true));
+        DOM.panelHistory.appendChild(node);
     });
 }
 
-function setupStarRatingSystem() {
-    const stars = DOM.userStars.querySelectorAll('i');
-    stars.forEach(star => {
+function setupInteractiveRatingEngine() {
+    DOM.interactiveStars.querySelectorAll('i').forEach(star => {
         star.addEventListener('click', (e) => {
-            if(!state.activeAnimeData) return;
-            const val = parseInt(e.target.dataset.value);
-            localStorage.setItem(`rating_${state.activeAnimeData.id}`, val);
-            loadUserStarInterface(state.activeAnimeData.id);
+            if(!appState.activeMedia) return;
+            localStorage.setItem(`stars_rating_${appState.activeMedia.id}`, e.target.dataset.scoreIndex);
+            syncInteractiveStarRating(appState.activeMedia.id);
         });
     });
 }
 
-function loadUserStarInterface(animeId) {
-    const savedRating = localStorage.getItem(`rating_${animeId}`) || 0;
-    const stars = DOM.userStars.querySelectorAll('i');
-    stars.forEach(star => {
-        const val = parseInt(star.dataset.value);
-        if(val <= savedRating) {
-            star.className = 'fa-star fa-solid text-accent';
-        } else {
-            star.className = 'fa-star fa-regular';
-        }
+function syncInteractiveStarRating(id) {
+    const scoreVal = localStorage.getItem(`stars_rating_${id}`) || 0;
+    DOM.interactiveStars.querySelectorAll('i').forEach(s => {
+        s.className = parseInt(s.dataset.scoreIndex) <= scoreVal ? 'fa-star fa-solid text-accent' : 'fa-star fa-regular';
     });
 }
 
-function renderComments(animeId) {
-    DOM.commentsContainer.innerHTML = '';
-    const comments = JSON.parse(localStorage.getItem(`comments_${animeId}`)) || [];
-    comments.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'comment-node';
-        div.innerHTML = `
-            <div class="comment-node-meta"><span>${c.user}</span><span>${new Date(c.time).toLocaleDateString()}</span></div>
-            <p>${c.text}</p>
+function hydrateDiscussionComments(id) {
+    DOM.discussionContainer.innerHTML = '';
+    const items = JSON.parse(localStorage.getItem(`comments_pool_${id}`)) || [];
+    items.forEach(c => {
+        const node = document.createElement('div');
+        node.className = 'comment-card-node';
+        node.innerHTML = `
+            <div class="comment-card-header"><strong>${c.author}</strong><span>${new Date(c.date).toLocaleDateString()}</span></div>
+            <p>${c.message}</p>
         `;
-        DOM.commentsContainer.appendChild(div);
+        DOM.discussionContainer.appendChild(node);
     });
 }
 
-function handleCommentSubmission(e) {
+function processCommentSubmission(e) {
     e.preventDefault();
-    if (!state.activeAnimeData) return;
-    const user = state.currentUser ? state.currentUser.username : "Guest Streamer";
-    const text = DOM.commentInput.value.trim();
-    if(!text) return;
+    if(!appState.activeMedia) return;
+    const author = appState.user ? appState.user.username : 'Anonymous User';
+    const msg = DOM.discussionTextarea.value.trim();
+    if(!msg) return;
 
-    const animeId = state.activeAnimeData.id;
-    const comments = JSON.parse(localStorage.getItem(`comments_${animeId}`)) || [];
-    comments.unshift({ user, text, time: Date.now() });
-    localStorage.setItem(`comments_${animeId}`, JSON.stringify(comments));
-    
-    DOM.commentInput.value = '';
-    renderComments(animeId);
+    const id = appState.activeMedia.id;
+    const array = JSON.parse(localStorage.getItem(`comments_pool_${id}`)) || [];
+    array.unshift({ author, message: msg, date: Date.now() });
+    localStorage.setItem(`comments_pool_${id}`, JSON.stringify(array));
+    DOM.discussionTextarea.value = '';
+    hydrateDiscussionComments(id);
 }
 
 /* ==========================================
- * SECURITY & VIRTUAL AUTHENTICATION CONTROLS
+ * PLATFORM ACCESS / VIRTUAL ID CONTROLS
  * ========================================== */
-function openAuthModal(mode) {
-    state.authMode = mode;
-    DOM.modalTitle.textContent = mode === 'login' ? 'Sign In' : 'Create Account';
-    DOM.authSubmitBtn.textContent = mode === 'login' ? 'Login' : 'Sign Up';
-    DOM.toggleAuthMode.textContent = mode === 'login' ? 'Sign Up Here' : 'Login Here';
-    DOM.authModal.classList.remove('hidden');
+function triggerAuthModalDisplay(mode) {
+    appState.authMode = mode;
+    DOM.authHeading.textContent = mode === 'login' ? 'Sign In' : 'Create Credentials';
+    DOM.authSubmitBtn.textContent = mode === 'login' ? 'Validate Login' : 'Register Account';
+    DOM.authModeToggle.textContent = mode === 'login' ? 'Register Profile Here' : 'Login Here';
+    DOM.authOverlay.classList.remove('hidden');
 }
 
-function handleAuthSubmit(e) {
+function captureProfileAuthorization(e) {
     e.preventDefault();
-    const username = document.getElementById('auth-user').value.trim();
-    // In strict Client-Side architectures, user storage objects emulate remote tables
-    state.currentUser = { username };
-    localStorage.setItem('ani_user', JSON.stringify(state.currentUser));
-    updateAuthUI();
-    DOM.authModal.classList.add('hidden');
+    const handle = document.getElementById('form-username-field').value.trim();
+    appState.user = { username: handle };
+    localStorage.setItem('as_user', JSON.stringify(appState.user));
+    synchronizeUserInterface();
+    DOM.authOverlay.classList.add('hidden');
     DOM.authForm.reset();
 }
 
-function handleLogout() {
-    state.currentUser = null;
-    localStorage.removeItem('ani_user');
-    updateAuthUI();
-    switchView('home');
+function executeProfileSignout() {
+    appState.user = null;
+    localStorage.removeItem('as_user');
+    synchronizeUserInterface();
+    navigateTo('home');
 }
 
-function updateAuthUI() {
-    if(state.currentUser) {
-        DOM.authBtn.classList.add('hidden');
-        DOM.userMenu.classList.remove('hidden');
-        DOM.usernameDisplay.textContent = state.currentUser.username;
+function synchronizeUserInterface() {
+    if (appState.user) {
+        DOM.authWrapper.innerHTML = `
+            <div class="user-profile-badge">
+                <span style="margin-right:12px; font-weight:600;">${appState.user.username}</span>
+                <button id="auth-logout-action" class="btn secondary-btn" style="padding:6px 14px;">Logout</button>
+            </div>
+        `;
     } else {
-        DOM.authBtn.classList.remove('hidden');
-        DOM.userMenu.classList.add('hidden');
+        DOM.authWrapper.innerHTML = `<button id="auth-modal-trigger" class="btn primary-btn">Login</button>`;
     }
 }
 
-/* ==========================================
- * SYSTEM UTILITY FUNCTIONS (DEBOUNCE)
- * ========================================== */
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+function debounce(fn, offsetDelay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), offsetDelay);
     };
 }
